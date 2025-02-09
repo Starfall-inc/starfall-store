@@ -1,0 +1,64 @@
+
+# Python development
+.env
+
+# Compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Local directories (adjust as needed)
+.idea/
+.venv/
+.vscode/
+.DS_Store
+
+# Logs
+*.log
+*.log.*
+
+# Build artifacts
+build/
+dist/
+temp/
+tmp/
+
+# Other
+*.swp
+*.swo
+*.tmp
+*.bak
+*.old
+*.out
+*.err
+*.cache
+*.o
+*.so
+*.a
+*.dll
+*.pdb
+*.exe
+*.obj
+
+# Database files
+db.sqlite3
+
+# Testing files (customize as needed)
+*.spec
+*.egg-info
+tests/
+test_*.py
+test_*.pyc
+test_*.pyo
+__pycache__/tests/
+.pytest_cache/
+
+
+# IDE-specific files (optional but helpful)
+.vscode/
+*.suo
+
+# Coverage reports
+coverage/
+.coverage
+
