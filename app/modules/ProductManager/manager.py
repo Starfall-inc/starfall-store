@@ -1,4 +1,4 @@
-from models import db, Product, ProductCategory
+from app.models import db, Product, ProductCategory
 from sqlalchemy.exc import SQLAlchemyError
 from app.extensions import db  # ✅ Import from extensions.py
 
@@ -128,3 +128,24 @@ class ProductManager:
             }
             for product in products
         ]
+
+    @staticmethod
+    def get_product_by_id(product_id):
+        product = Product.query.get(product_id)
+        if not product:
+            return {"error": "Product not found"}
+        return {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "category_id": product.category_id,
+            "price": float(product.price),
+            "stock_quantity": product.stock_quantity,
+            "weight": float(product.weight),
+            "image_url": product.image_url,
+            "tags": product.tags,
+            "created_at": product.created_at,
+            "is_available": product.is_available,
+            "is_featured": product.is_featured,
+            "is_popular": product.is_popular,
+        }
