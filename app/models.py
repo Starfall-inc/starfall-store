@@ -177,6 +177,18 @@ class ProductReview(db.Model):
     def __repr__(self):
         return f'<ProductReview {self.id}>'
 
+    def to_dict(self):
+        """Convert the ProductReview instance to a dictionary."""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "product_id": self.product_id,
+            "rating": self.rating,
+            "review_text": self.review_text,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
+
 # Note: The Review model seems redundant with ProductReview, consider consolidating
 class Review(db.Model):
     __tablename__ = 'review'
