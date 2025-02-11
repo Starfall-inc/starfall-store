@@ -1,6 +1,6 @@
-from models import db, Product, ProductCategory
+from app.models import db, Product, ProductCategory
 from sqlalchemy.exc import SQLAlchemyError
-from app.extensions import db  # ✅ Import from extensions.py
+from app.extensions import db, logger # ✅ Import from extensions.py
 
 
 class ProductManager:
@@ -128,3 +128,8 @@ class ProductManager:
             }
             for product in products
         ]
+
+    @staticmethod
+    def get_product_by_id(product_id):
+        product = Product.query.get_or_404(product_id)
+        return product

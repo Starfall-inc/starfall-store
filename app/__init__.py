@@ -1,6 +1,6 @@
 from flask import Flask
 from app.config import config
-from app.extensions import db  # Ensure you're using the same `db` instance
+from app.extensions import db, init_logger  # Ensure you're using the same `db` instance
 import os
 
 def create_app():
@@ -17,6 +17,7 @@ def create_app():
     with app.app_context():
         from app.routes import register_blueprints
         register_blueprints(app)
+        init_logger()
 
         # Only create tables if necessary
         if "sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]:

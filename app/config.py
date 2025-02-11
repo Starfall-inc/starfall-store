@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
 load_dotenv()
@@ -10,6 +11,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///database.db")  # Default to SQLite
     DEBUG = False
+    LOG_DIR = Path(__file__).parent / "logs"
+    MAIN_LOG_FILE = LOG_DIR / "app.log"
+    LOG_DIR.mkdir(exist_ok=True)
 
 
 class ProductionConfig(Config):
