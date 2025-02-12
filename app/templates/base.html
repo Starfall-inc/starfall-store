@@ -1,5 +1,4 @@
 {# templates/base.html #}
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,8 +11,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#8B5CF6',
-                        secondary: '#7C3AED',
+                        primary: "{{ PRIMARY_COLOR }}",
+                        secondary: "{{ SECONDARY_COLOR }}",
                     }
                 }
             }

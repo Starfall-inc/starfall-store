@@ -1,6 +1,7 @@
 from app.extensions import db
 from datetime import datetime
 
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -28,6 +29,7 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.email}>'
 
+
 class ProductCategory(db.Model):
     __tablename__ = 'product_category'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -39,15 +41,16 @@ class ProductCategory(db.Model):
     def __repr__(self):
         return f'<ProductCategory {self.name}>'
 
+
 class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     category_id = db.Column('category', db.Integer, db.ForeignKey('product_category.id'))
-    price = db.Column(db.Numeric(10,2), nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
     stock_quantity = db.Column(db.Integer, nullable=False)
-    weight = db.Column(db.Numeric(10,2), nullable=False)
+    weight = db.Column(db.Numeric(10, 2), nullable=False)
     image_url = db.Column(db.String(255))
     created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     is_available = db.Column(db.Boolean, default=True)
@@ -76,6 +79,7 @@ class Product(db.Model):
             "is_available": self.is_available
         }
 
+
 class PaymentMethod(db.Model):
     __tablename__ = 'payment_methods'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -87,6 +91,7 @@ class PaymentMethod(db.Model):
 
     def __repr__(self):
         return f'<PaymentMethod {self.method_name}>'
+
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -100,7 +105,7 @@ class Order(db.Model):
     total = db.Column(db.Float)
     shipping_address = db.Column(db.String(255))
     status = db.Column(db.String(20), default='pending')
-    delivery_charges = db.Column(db.Numeric(10,2), default=0.00)
+    delivery_charges = db.Column(db.Numeric(10, 2), default=0.00)
     coordinate_lat = db.Column(db.Float)
     coordinate_lon = db.Column(db.Float)
 
@@ -112,6 +117,7 @@ class Order(db.Model):
     @property
     def total_amount(self):
         return sum(detail.subtotal for detail in self.order_details) + float(self.delivery_charges or 0)
+
 
 class OrderDetail(db.Model):
     __tablename__ = 'order_details'
@@ -129,6 +135,7 @@ class OrderDetail(db.Model):
         self.subtotal = self.quantity * self.price
         return self.subtotal
 
+
 class FeaturedProduct(db.Model):
     __tablename__ = 'featured_product'
     id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
@@ -142,6 +149,7 @@ class FeaturedProduct(db.Model):
     def is_active(self):
         now = datetime.utcnow()
         return self.from_date <= now <= self.to_date
+
 
 class Cart(db.Model):
     __tablename__ = 'carts'
@@ -158,6 +166,7 @@ class Cart(db.Model):
 
     def __repr__(self):
         return f'<Cart {self.id}>'
+
 
 class ProductReview(db.Model):
     __tablename__ = 'product_reviews'
@@ -189,17 +198,6 @@ class ProductReview(db.Model):
             "updated_at": self.updated_at.isoformat() if self.updated_at else None
         }
 
-# Note: The Review model seems redundant with ProductReview, consider consolidating
-class Review(db.Model):
-    __tablename__ = 'review'
-    revId = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    product_id = db.Column('product', db.Integer, db.ForeignKey('products.id'))
-    star = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(255))
-    created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Review {self.revId}>'
 
 class Session(db.Model):
     __tablename__ = 'sessions'

@@ -1,9 +1,7 @@
 from flask import Blueprint, request, jsonify
-from app.extensions import db,logger
+from app.extensions import db, logger
 from app.modules.ProductManager import ProductManager
 from app.modules.ReviewManager import ReviewManager
-
-
 
 product_bp = Blueprint("product", __name__)
 
@@ -18,6 +16,7 @@ def get_products():
     products = ProductManager.get_all_products()
     return jsonify([product for product in products])
 
+
 # 🟢 Get a single product by ID
 @product_bp.route("/<int:product_id>", methods=["GET"])
 def get_product(product_id):
@@ -25,9 +24,9 @@ def get_product(product_id):
     product = ProductManager.get_product_by_id(product_id)
     return jsonify(product.to_dict())
 
+
 # 🟢 get a product's review
 @product_bp.route("/<int:product_id>/reviews", methods=["GET"])
 def get_reviews(product_id):
     reviews = ReviewManager.get_reviews(product_id)
     return jsonify([review.to_dict() for review in reviews])
-

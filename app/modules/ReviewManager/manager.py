@@ -1,3 +1,5 @@
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.models import Product
 from app.models import ProductReview as Review
 from app.extensions import db, logger

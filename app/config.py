@@ -1,9 +1,15 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-
+import json
 # Load environment variables from .env file
 load_dotenv()
+
+# Load JSON configuration file
+CONFIG_PATH = Path(__file__).parent / "config.json"
+with open(CONFIG_PATH, "r") as f:
+    config_data = json.load(f)
+
 
 class Config:
     """Base configuration with default settings"""
@@ -15,6 +21,25 @@ class Config:
     MAIN_LOG_FILE = LOG_DIR / "app.log"
     LOG_DIR.mkdir(exist_ok=True)
 
+    # Shop Settings
+    SHOP_NAME = config_data["shop"]["name"]
+    SHOP_EMAIL = config_data["shop"]["email"]
+    SHOP_PHONE = config_data["shop"]["phone"]
+    SHOP_ADDRESS = config_data["shop"]["address"]
+    CURRENCY = config_data["shop"]["currency"]
+    CURRENCY_SYMBOL = config_data["shop"]["currency_symbol"]
+    TAX_RATE = config_data["shop"]["tax"]
+    SHIPPING_COST = config_data["shop"]["shipping"]
+    FREE_SHIPPING_THRESHOLD = config_data["shop"]["free_shipping"]
+    LOGO = config_data["shop"]["logo"]
+    FAVICON = config_data["shop"]["favicon"]
+
+    # Theme Settings
+    PRIMARY_COLOR = config_data["shop"]["theme"]["primary"]
+    SECONDARY_COLOR = config_data["shop"]["theme"]["secondary"]
+    TEXT_COLOR = config_data["shop"]["theme"]["text"]
+    BACKGROUND_COLOR = config_data["shop"]["theme"]["background"]
+    DARK_COLOR = config_data["shop"]["theme"]["dark"]
 
 class ProductionConfig(Config):
     """Production-specific configuration"""
