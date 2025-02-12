@@ -1,0 +1,101 @@
+{# templates/components/navbar.html #}
+<nav class="bg-white shadow-lg relative">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+            <a href="/" class="flex-shrink-0 flex items-center">
+                <img class="h-12 w-auto" src="{{ url_for('static', filename='images/mascot.png') }}" alt="Logo">
+                <span class="ml-2 text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    DreamCart
+                </span>
+            </a>
+            {# Desktop Navigation #}
+            <div class="hidden md:flex ml-10 space-x-8">
+                <a href="/" class="text-primary hover:text-secondary px-3 py-2 font-medium">Home</a>
+                <a href="/shop" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Shop</a>
+                <a href="/blog" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Blog</a>
+                <a href="/about" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">About</a>
+                <a href="/contact" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Contact</a>
+            </div>
+        </div>
+            <div class="flex items-center space-x-4">
+                <a href="/cart" class="text-gray-700 hover:text-primary">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                </a>
+                <a href="/login" class="text-gray-700 hover:text-primary">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </a>
+                {# Mobile menu button #}
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-primary">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {# Mobile Sidebar #}
+    <div id="mobile-sidebar" class="fixed inset-0 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden z-50">
+        {# Backdrop #}
+        <div id="sidebar-backdrop" class="absolute inset-0 bg-black opacity-0 transition-opacity duration-300 ease-in-out backdrop-blur-sm"></div>
+
+        {# Sidebar Content #}
+        <div class="absolute right-0 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-bold text-gray-800">Menu</h2>
+                    <button id="close-sidebar" class="text-gray-500 hover:text-primary">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="flex flex-col space-y-4">
+                    <a href="/" class="text-primary hover:text-secondary py-2 font-medium">Home</a>
+                    <a href="/shop" class="text-gray-700 hover:text-primary py-2 font-medium">Shop</a>
+                    <a href="/blog" class="text-gray-700 hover:text-primary py-2 font-medium">Blog</a>
+                    <a href="/about" class="text-gray-700 hover:text-primary py-2 font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-primary py-2 font-medium">Contact</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeSidebarButton = document.getElementById('close-sidebar');
+    const mobileSidebar = document.getElementById('mobile-sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const mainContent = document.querySelector('main');
+
+    function openSidebar() {
+        mobileSidebar.classList.remove('translate-x-full');
+        sidebarBackdrop.classList.add('opacity-50');
+        document.body.style.overflow = 'hidden';
+        mainContent.classList.add('blur-sm');
+    }
+
+    function closeSidebar() {
+        mobileSidebar.classList.add('translate-x-full');
+        sidebarBackdrop.classList.remove('opacity-50');
+        document.body.style.overflow = '';
+        mainContent.classList.remove('blur-sm');
+    }
+
+    mobileMenuButton.addEventListener('click', openSidebar);
+    closeSidebarButton.addEventListener('click', closeSidebar);
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Close sidebar on navigation
+    const sidebarLinks = mobileSidebar.querySelectorAll('a');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+
+    // Handle escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+});
+</script>
