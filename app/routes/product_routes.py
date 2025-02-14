@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from app.extensions import db, logger
+from app.extensions import db
+from app.extensions import seraphina as logger
 from app.modules.ProductManager import ProductManager
 from app.modules.ReviewManager import ReviewManager
 

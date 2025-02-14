@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import json
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -41,6 +42,7 @@ class Config:
     BACKGROUND_COLOR = config_data["shop"]["theme"]["background"]
     DARK_COLOR = config_data["shop"]["theme"]["dark"]
 
+
 class ProductionConfig(Config):
     """Production-specific configuration"""
     ENV = "production"
@@ -48,23 +50,10 @@ class ProductionConfig(Config):
 
     # Database Configurations
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@localhost:3306/database")
-    MYSQL_SERVER_PORT = os.getenv("MYSQL_SERVER_PORT", "3306")
-    MYSQL_DATABASE_NAME = os.getenv("MYSQL_DATABASE_NAME")
-    MYSQL_SERVER_USERNAME = os.getenv("MYSQL_SERVER_USERNAME")
-    MYSQL_SERVER_PASSWORD = os.getenv("MYSQL_SERVER_PASSWORD")
 
     # OAuth Configurations
     REDIRECT_URI = os.getenv("REDIRECT_URL")
     OAUTHLIB_INSECURE_TRANSPORT = os.getenv("OAUTHLIB_INSECURE_TRANSPORT", "1")  # Default to enabled
-
-    # NTFY Notification Service
-    NTFY_HOST = os.getenv("NTFY_SERVER_ADDRESS")
-    NTFY_USER_ID = os.getenv("NTFY_SERVER_USER_ID")
-    NTFY_PASSWORD = os.getenv("NTFY_SERVER_PASSWORD")
-    NTFY_CHANNEL = os.getenv("NTFY_SERVER_CHANNEL")
-
-    # MongoDB for Analytics
-    MONGO_URI = os.getenv("MONGO_URI")
 
 
 # Configuration dictionary for easy selection

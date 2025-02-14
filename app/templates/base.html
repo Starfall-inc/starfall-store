@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DreamCart{% endblock %}</title>
+    <title>{% block title%}{{ SHOP_NAME }}{% endblock %}</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,11 +13,15 @@
                     colors: {
                         primary: "{{ PRIMARY_COLOR }}",
                         secondary: "{{ SECONDARY_COLOR }}",
+                        text: "{{ TEXT_COLOR }}",
+                        background: "{{ BACKGROUND_COLOR }}",
+                        dark: "{{ DARK_COLOR }}"
                     }
                 }
             }
         }
     </script>
+
     <style>
         .animate-fade-in {
             animation: fadeIn 0.5s ease-in;

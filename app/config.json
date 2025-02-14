@@ -1,23 +1,22 @@
 {
-  "shop" : {
-    "name" : "DreamKart",
-    "email" : "",
-    "phone" : "1234567890",
-    "address" : "1234 Main St, City, State, 12345",
-    "currency" : "USD",
-    "currency_symbol" : "$",
-    "tax" : 0.07,
-    "shipping" : 5.00,
-    "free_shipping" : 50.00,
-    "logo" : "logo.png",
-    "favicon" : "favicon.ico",
+  "shop": {
+    "name": "SakuraMart",
+    "email": "support@sakuramart.jp",
+    "phone": "098-765-4321",
+    "address": "123 Sakura St, Tokyo, Japan, 100-0001",
+    "currency": "JPY",
+    "currency_symbol": "¥",
+    "tax": 0.08,
+    "shipping": 500,
+    "free_shipping": 5000,
+    "logo": "sakura-logo.png",
+    "favicon": "sakura-favicon.ico",
     "theme": {
-      "primary": "#DC2626",
-      "secondary": "#B91C1C",
-      "text": "#F3F4F6",
-      "background": "#1F2937",
-      "dark": "#111827"
+      "primary": "#FFB7C5",
+      "secondary": "#FF69B4",
+      "text": "#4A4A4A",
+      "background": "#FFF0F5",
+      "dark": "#8B0000"
     }
-
   }
 }

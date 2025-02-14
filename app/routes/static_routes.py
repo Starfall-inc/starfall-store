@@ -1,7 +1,9 @@
-from flask import Blueprint, request, jsonify, render_template
-from app.extensions import db,logger
+from flask import Blueprint, request, jsonify, render_template, g
+from app.extensions import db
+from app.extensions import seraphina
 from app.modules.ProductManager import ProductManager
 from app.modules.ReviewManager import ReviewManager
+
 
 
 
@@ -30,6 +32,15 @@ def index():
         # Add more products as needed
     ]
 
+    seraphina.warning("Rendering index page")
+
+
+
     return render_template('index.html',
                            features=features,
                            featured_products=featured_products)
+
+
+@staticroute_bp.route('/product/<int:product_id>', methods=['GET'])
+def render_product_page(product_id):
+    return render_template('product.html', product_id=product_id)

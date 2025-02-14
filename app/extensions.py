@@ -3,17 +3,17 @@ from flask import current_app
 from .Seraphina import Seraphina
 
 db = SQLAlchemy()
+seraphina = None  # Keep it None initially
 
-logger = None  # Initialize as None first
 
-def init_logger():
-    """Initialize logger inside an app context."""
-    global logger
-    print("[DEBUG] Initializing logger...")  # 🟢 Debug message
-    logger = Seraphina(
-        name="DreamKart",
-        log_file=current_app.config['MAIN_LOG_FILE'],
+def init_seraphina(app):
+    global seraphina
+    seraphina = Seraphina(
+        name=app.config["SHOP_NAME"],
+        log_file=app.config["MAIN_LOG_FILE"],
         console_output=True,
+        max_file_size=10 * 1024 * 1024,
+        backup_count=3,
         use_colors=True
     )
-    print("[DEBUG] Logger initialized successfully.")  # 🟢 Confirm initialization
+    seraphina.info("Seraphina initialized successfully!")

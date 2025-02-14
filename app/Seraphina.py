@@ -77,27 +77,24 @@ class Seraphina:
             self.log_file.rename(self.log_file.parent / f"{self.log_file.stem}.1{self.log_file.suffix}")
 
     def _format_message(self, level: LogLevel, message: str, handler: TextIO) -> str:
-        """Format the log message with timestamp, level, and colors"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         emoji, color = level.value
-        
-        # Base message format
         base_msg = f"[{timestamp}] {emoji} [{self.name}] {message}"
-        
-        # Add colors for console output if enabled
+
         if self.use_colors and handler == sys.stdout:
             timestamp_color = Fore.BLUE + Style.DIM
             name_color = Fore.MAGENTA + Style.BRIGHT
             return f"{timestamp_color}[{timestamp}]{Style.RESET_ALL} {emoji} {name_color}[{self.name}]{Style.RESET_ALL} {color}{message}{Style.RESET_ALL}"
-        
-        return base_msg
+
+        return base_msg  # No colors for file logs
+
 
     def _write_log(self, level: LogLevel, message: str):
         """Write the log message to all handlers"""
         with self._lock:
             for handler in self.handlers:
                 formatted_message = self._format_message(level, message, handler)
-                if isinstance(handler, TextIO):
+                if hasattr(handler, "write"):
                     print(formatted_message, file=handler, flush=True)
                     
     def _log(self, level: LogLevel, message: str):

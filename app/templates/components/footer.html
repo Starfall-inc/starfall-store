@@ -1,37 +1,37 @@
 {# templates/components/footer.html #}
-<footer class="bg-gray-800 text-white pt-12 pb-8">
+<footer class="bg-background text-[color:var(--footer-text)] pt-12 pb-8">
     <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-            <h4 class="text-lg font-bold mb-4">Contact</h4>
+            <h4 class="text-lg font-bold mb-4 text-primary">Contact</h4>
             <p class="mb-2"><strong>Address:</strong> {{ SHOP_ADDRESS }}</p>
             <p class="mb-2"><strong>Phone:</strong> {{ SHOP_PHONE }}</p>
             <div class="mt-4">
-                <h4 class="text-lg font-bold mb-2">Follow Us</h4>
+                <h4 class="text-lg font-bold mb-2 text-primary">Follow Us</h4>
                 <div class="flex space-x-4">
-                    <a href="#" class="hover:text-primary"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="hover:text-primary"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="hover:text-primary"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-secondary"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-secondary"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-secondary"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
         </div>
         <div>
-            <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+            <h4 class="text-lg font-bold mb-4 text-primary">Quick Links</h4>
             <div class="flex flex-col space-y-2">
-                <a href="#" class="hover:text-primary">About Us</a>
-                <a href="#" class="hover:text-primary">Privacy Policy</a>
-                <a href="#" class="hover:text-primary">Terms & Conditions</a>
+                <a href="#" class="hover:text-secondary">About Us</a>
+                <a href="#" class="hover:text-secondary">Privacy Policy</a>
+                <a href="#" class="hover:text-secondary">Terms & Conditions</a>
             </div>
         </div>
         <div>
-            <h4 class="text-lg font-bold mb-4">My Account</h4>
+            <h4 class="text-lg font-bold mb-4 text-primary">My Account</h4>
             <div class="flex flex-col space-y-2">
-                <a href="#" class="hover:text-primary">Sign In</a>
-                <a href="#" class="hover:text-primary">View Cart</a>
-                <a href="#" class="hover:text-primary">My Wishlist</a>
+                <a href="#" class="hover:text-secondary">Sign In</a>
+                <a href="#" class="hover:text-secondary">View Cart</a>
+                <a href="#" class="hover:text-secondary">My Wishlist</a>
             </div>
         </div>
         <div>
-            <h4 class="text-lg font-bold mb-4">Install App</h4>
+            <h4 class="text-lg font-bold mb-4 text-primary">Install App</h4>
             <p class="mb-4">From App Store or Google Play</p>
             <div class="flex space-x-4 mb-4">
                 <img src="{{ url_for('static', filename='images/app-store.png') }}" alt="App Store" class="h-10">
@@ -39,7 +39,24 @@
             </div>
         </div>
     </div>
-    <div class="max-w-7xl mx-auto px-4 pt-8 mt-8 border-t border-700">
+    <div class="max-w-7xl mx-auto px-4 pt-8 mt-8 border-t border-text">
         <p class="text-center">© 2025 {{ SHOP_NAME }} Powered By StoreStudio All rights reserved.</p>
     </div>
 </footer>
+
+<script>
+    // Dynamic text color based on background
+    const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+    const footerTextColor = isDarkColor(backgroundColor) ? "#F3F4F6" : "#1F2937"; // Light if dark bg, dark if light bg
+    document.documentElement.style.setProperty('--footer-text', footerTextColor);
+
+    function isDarkColor(hex) {
+        if (!hex) return false;
+        hex = hex.replace("#", "");
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness < 128; // If brightness is low, consider it dark
+    }
+</script>

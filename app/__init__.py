@@ -1,7 +1,11 @@
 from flask import Flask
+
+from app.Seraphina import Seraphina
 from app.config import config
-from app.extensions import db, init_logger  # Ensure you're using the same `db` instance
+from app.extensions import db, seraphina, init_seraphina
 import os
+from sqlalchemy import inspect
+
 
 def create_app():
     app = Flask(__name__)
@@ -13,11 +17,15 @@ def create_app():
     # Initialize database
     db.init_app(app)
 
+    # Initialize Seraphina
+    init_seraphina(app)
+
     # Register blueprints inside app context
     with app.app_context():
+        global seraphina
+        db.engine.connect()
         from app.routes import register_blueprints
         register_blueprints(app)
-        init_logger()
 
         app.context_processor(lambda: {
             "SHOP_NAME": app.config["SHOP_NAME"],
@@ -40,5 +48,17 @@ def create_app():
         # Only create tables if necessary
         if "sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]:
             db.create_all()
+
+        inspector = inspect(db.engine)
+        existing_tables = set(inspector.get_table_names())  # Get existing tables
+        defined_tables = set(db.metadata.tables.keys())  # Get tables from models
+
+        missing_tables = defined_tables - existing_tables  # Find tables that are missing
+
+        if missing_tables:
+            print(f"Creating missing tables: {', '.join(missing_tables)}")
+            db.create_all()
+        else:
+            print("All tables exist. No new tables needed.")
 
     return app
