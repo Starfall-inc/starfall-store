@@ -2,6 +2,7 @@ from app.models import Cart, Product, User, db
 from datetime import datetime
 import uuid
 
+
 class CartManager:
     @staticmethod
     def add_to_cart(user_id, product_id, quantity=1):

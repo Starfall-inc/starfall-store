@@ -44,3 +44,13 @@ def index():
 @staticroute_bp.route('/product/<int:product_id>', methods=['GET'])
 def render_product_page(product_id):
     return render_template('product.html', product_id=product_id)
+
+
+@staticroute_bp.route('/signin', methods=['GET'])
+def render_login_page():
+    return render_template('auth/login.html')
+
+
+@staticroute_bp.route('/signup', methods=['GET'])
+def render_signup_page():
+    return render_template('auth/signup.html')

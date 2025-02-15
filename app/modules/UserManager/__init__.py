@@ -1,1 +1,1 @@
-# from .manager import UserManager
+from .manager import CustomerManager

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ SHOP_NAME }} - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "{{ PRIMARY_COLOR }}",
+                        secondary: "{{ SECONDARY_COLOR }}",
+                        text: "{{ TEXT_COLOR }}",
+                        background: "{{ BACKGROUND_COLOR }}",
+                        dark: "{{ DARK_COLOR }}"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loader {
+            border-top-color: {{ PRIMARY_COLOR }};
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slide-out {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .animate-slide-in {
+            animation: slide-in 0.4s ease-out forwards;
+        }
+
+        .animate-slide-out {
+            animation: slide-out 0.4s ease-out forwards;
+        }
+
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-4">
+
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed top-5 right-5 space-y-4 z-50"></div>
+
+<!-- Loading Overlay -->
+<div id="loader" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="loader w-12 h-12 border-4 border-solid border-t-primary border-opacity-100 rounded-full animate-spin"></div>
+</div>
+
+
+<!-- Login Container -->
+<div class="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden slide-up">
+    <!-- Logo Section -->
+    <div class="text-center p-6 bg-primary">
+        <img src="{{ url_for('static', filename='images/mascot.png') }}" alt="ShopEase Logo" class="mx-auto rounded-full bg-white p-2 w-20 h-20">
+        <h2 class="mt-4 text-2xl font-bold text-white">{{ SHOP_NAME }}</h2>
+    </div>
+
+    <!-- Login Form -->
+    <div class="p-6">
+        <h3 class="text-xl font-semibold text-text mb-6">Welcome Back!</h3>
+        <form id="loginForm" class="space-y-4">
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-text" for="email">Email</label>
+                <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition-colors" required>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-text" for="password">Password</label>
+                <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition-colors" required>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <label class="flex items-center">
+                    <input type="checkbox" class="w-4 h-4 text-primary">
+                    <span class="ml-2 text-sm text-text">Remember me</span>
+                </label>
+                <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-opacity-90 transition-colors">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Social Login -->
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                    <i class="fab fa-google text-xl"></i>
+                </button>
+                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                    <i class="fab fa-facebook-f text-xl"></i>
+                </button>
+                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                    <i class="fab fa-apple text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sign Up Link -->
+        <p class="mt-6 text-center text-sm text-text">
+            Don't have an account?
+            <a href="/signup" class="text-primary hover:underline">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+
+    function showToast(message, type = "success") {
+        // Select the toast container
+        const toastContainer = document.getElementById("toast-container");
+
+        // Create the toast element
+        const toast = document.createElement("div");
+
+        // Assign different colors based on type (success/error)
+        const bgColor = type === "success" ? "bg-green-500" : "bg-red-500";
+        const borderColor = type === "success" ? "border-green-700" : "border-red-700";
+
+        // Toast HTML with Tailwind classes
+        toast.innerHTML = `
+        <div class="flex items-center w-full max-w-xs p-4 text-white border ${borderColor} rounded-lg shadow-md ${bgColor} animate-slide-in">
+            <div class="flex-1 text-sm">${message}</div>
+            <button class="ml-4 text-white opacity-75 hover:opacity-100 focus:outline-none" onclick="this.parentElement.remove()">
+                ✖
+            </button>
+        </div>
+    `;
+
+        // Append to toast container
+        toastContainer.appendChild(toast);
+
+        // Auto-remove the toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.add("animate-slide-out");
+            setTimeout(() => toast.remove(), 500); // Remove from DOM after animation
+        }, 3000);
+    }
+
+
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Get input values
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const loader = document.getElementById('loader');
+
+        // Show loader
+        loader.classList.remove('hidden');
+        loader.classList.add('fade-in');
+
+        try {
+            // Send login request
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            // Hide loader
+            loader.classList.add('hidden');
+            loader.classList.remove('fade-in');
+
+            if (response.ok) {
+                // Store session token (if provided)
+                if (data.session_id) {
+                    localStorage.setItem('session_id', data.session_id);
+                }
+
+                showToast('Login successful!',"success");
+                window.location.href = '/dashboard'; // Redirect to dashboard
+            } else {
+                showToast(data.error || 'Invalid credentials, please try again.',"error");
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Something went wrong. Please try again later.');
+
+            // Hide loader in case of failure
+            loader.classList.add('hidden');
+            loader.classList.remove('fade-in');
+        }
+    });
+
+</script>
+</body>
+</html>

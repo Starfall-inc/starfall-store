@@ -16,6 +16,7 @@ class Config:
     """Base configuration with default settings"""
     SECRET_KEY = os.getenv("SECRET_KEY", "c4d2e2f68f114b2d8d7a2f3a8e9b1c6f7e8d9f3b6a2c5d4e1a8c9b7d6e1f2a3c")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///database.db")  # Default to SQLite
     DEBUG = False
     LOG_DIR = Path(__file__).parent / "logs"

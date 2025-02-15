@@ -1,9 +1,14 @@
+import redis
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from .Seraphina import Seraphina
+from flask_redis import FlaskRedis  # Import Flask-Redis
+
 
 db = SQLAlchemy()
 seraphina = None  # Keep it None initially
+redis_clients = {}
+
 
 
 def init_seraphina(app):
@@ -17,3 +22,14 @@ def init_seraphina(app):
         use_colors=True
     )
     seraphina.info("Seraphina initialized successfully!")
+
+
+def init_redis(app):
+    global seraphina
+    """Initializes Redis connections for different database indexes."""
+    redis_url = app.config.get("REDIS_URL", "redis://localhost:6379/")
+    for db_index in range(5):  # Example: Creating connections for DBs 0 to 4
+        redis_clients[db_index] = redis.StrictRedis.from_url(redis_url, db=db_index, decode_responses=True)
+
+    total_database = len(redis_clients)
+    seraphina.info(f"Redis connection established for {total_database} databases.")
