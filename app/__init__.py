@@ -2,7 +2,7 @@ from flask import Flask
 
 from app.Seraphina import Seraphina
 from app.config import config
-from app.extensions import db, seraphina, init_seraphina, init_redis
+from app.extensions import db, seraphina, init_seraphina, init_redis, init_cache
 import os
 from sqlalchemy import inspect
 
@@ -22,6 +22,9 @@ def create_app():
 
     # inits redis
     init_redis(app)  # Initialize Redis
+
+    # init cache
+    init_cache(app)
 
     # Register blueprints inside app context
     with app.app_context():

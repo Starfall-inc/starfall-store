@@ -32,7 +32,7 @@ def index():
         # Add more products as needed
     ]
 
-    seraphina.warning("Rendering index page")
+    seraphina.info("Rendering index page")
 
 
 
@@ -46,11 +46,11 @@ def render_product_page(product_id):
     return render_template('product.html', product_id=product_id)
 
 
-@staticroute_bp.route('/signin', methods=['GET'])
+@staticroute_bp.route('/auth/signin', methods=['GET'])
 def render_login_page():
     return render_template('auth/login.html')
 
 
-@staticroute_bp.route('/signup', methods=['GET'])
+@staticroute_bp.route('/auth/signup', methods=['GET'])
 def render_signup_page():
     return render_template('auth/signup.html')

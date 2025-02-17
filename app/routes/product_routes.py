@@ -1,33 +1,63 @@
 from flask import Blueprint, request, jsonify
-from app.extensions import db
-from app.extensions import seraphina as logger
+from app.extensions import db, seraphina, cache  # Assuming you have the cache object from Flask-Caching
 from app.modules.ProductManager import ProductManager
 from app.modules.ReviewManager import ReviewManager
 
 product_bp = Blueprint("product", __name__)
 
-# Ensure logger is initialized inside an app context
-if logger is None:
-    print("[ERROR] Logger is not initialized. Call init_logger() inside an app context.")
-
 
 # 🟢 Get all products
 @product_bp.route("/", methods=["GET"])
 def get_products():
+    cache_key = "all_products"
+    cached_products = cache.get(cache_key)
+
+    if cached_products:
+        seraphina.info("Fetched products from cache.")
+        return jsonify(cached_products)
+
+    # If not in cache, fetch normally and cache it
     products = ProductManager.get_all_products()
-    return jsonify([product for product in products])
+    products_dict = [product.to_dict() for product in products]
+    cache.set(cache_key, products_dict, timeout=60 * 60)  # Cache for 1 hour
+
+    seraphina.info("Fetched products normally and cached the result.")
+    return jsonify(products_dict)
 
 
 # 🟢 Get a single product by ID
 @product_bp.route("/<int:product_id>", methods=["GET"])
 def get_product(product_id):
-    # product = Product.query.get_or_404(product_id)
-    product = ProductManager.get_product_by_id(product_id)
-    return jsonify(product.to_dict())
+    cache_key = f"product_{product_id}"
+    cached_product = cache.get(cache_key)
+
+    if cached_product:
+        seraphina.info(f"Fetched product {product_id} from cache.")
+        return jsonify(cached_product)
+
+    # If not in cache, fetch normally and cache it
+    product = ProductManager.get_product(product_id)
+    product_dict = product
+    cache.set(cache_key, product_dict, timeout=60 * 60)  # Cache for 1 hour
+
+    seraphina.info(f"Fetched product {product_id} normally and cached the result.")
+    return jsonify(product_dict)
 
 
-# 🟢 get a product's review
-@product_bp.route("/<int:product_id>/reviews", methods=["GET"])
-def get_reviews(product_id):
-    reviews = ReviewManager.get_reviews(product_id)
-    return jsonify([review.to_dict() for review in reviews])
+# 🟢 Get featured products
+@product_bp.route("/featured", methods=["GET"])
+def get_featured_products():
+    cache_key = "featured_products"
+    cached_featured = cache.get(cache_key)
+
+    if cached_featured:
+        seraphina.info("Fetched featured products from cache.")
+        return jsonify(cached_featured)
+
+    # If not in cache, fetch normally and cache it
+    products = ProductManager.get_featured_products()
+    featured_products_dict = [product.to_dict() for product in products]
+    cache.set(cache_key, featured_products_dict, timeout=60 * 60)  # Cache for 1 hour
+
+    seraphina.info("Fetched featured products normally and cached the result.")
+    return jsonify(featured_products_dict)

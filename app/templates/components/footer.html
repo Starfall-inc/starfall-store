@@ -32,12 +32,23 @@
         </div>
         <div>
             <h4 class="text-lg font-bold mb-4 text-primary">Install App</h4>
-            <p class="mb-4">From App Store or Google Play</p>
             <div class="flex space-x-4 mb-4">
-                <img src="{{ url_for('static', filename='images/app-store.png') }}" alt="App Store" class="h-10">
-                <img src="{{ url_for('static', filename='images/play-store.png') }}" alt="Play Store" class="h-10">
+                <!-- App Store FontAwesome icon with Tailwind styling -->
+                <a href="https://www.apple.com/app-store/" target="_blank" class="flex items-center space-x-2 text-primary">
+                    <i class="fab fa-app-store-ios text-2xl"></i> <!-- Font Awesome iOS App Store icon -->
+                    <span class="font-semibold">App Store</span>
+                </a>
+
+                <!-- Play Store FontAwesome icon with Tailwind styling -->
+                <a href="https://play.google.com/store" target="_blank" class="flex items-center space-x-2 text-primary">
+                    <i class="fab fa-google-play text-2xl"></i> <!-- Font Awesome Google Play icon -->
+                    <span class="font-semibold">Google Play</span>
+                </a>
             </div>
         </div>
+
+
+
     </div>
     <div class="max-w-7xl mx-auto px-4 pt-8 mt-8 border-t border-text">
         <p class="text-center">© 2025 {{ SHOP_NAME }} Powered By StoreStudio All rights reserved.</p>

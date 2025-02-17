@@ -2,12 +2,12 @@ import redis
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
 from .Seraphina import Seraphina
-from flask_redis import FlaskRedis  # Import Flask-Redis
-
+from flask_caching import Cache
 
 db = SQLAlchemy()
 seraphina = None  # Keep it None initially
 redis_clients = {}
+cache = None
 
 
 
@@ -33,3 +33,7 @@ def init_redis(app):
 
     total_database = len(redis_clients)
     seraphina.info(f"Redis connection established for {total_database} databases.")
+
+def init_cache(app):
+    global cache
+    cache = Cache(app)

@@ -44,6 +44,11 @@ class Config:
     DARK_COLOR = config_data["shop"]["theme"]["dark"]
 
 
+    # Cache Settings :
+    CACHE_TYPE = 'simple'
+    CACHE_DEFAULT_TIMEOUT = 300
+
+
 class ProductionConfig(Config):
     """Production-specific configuration"""
     ENV = "production"

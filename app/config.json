@@ -5,7 +5,7 @@
     "phone": "098-765-4321",
     "address": "123 Sakura St, Tokyo, Japan, 100-0001",
     "currency": "JPY",
-    "currency_symbol": "¥",
+    "currency_symbol": "$",
     "tax": 0.08,
     "shipping": 500,
     "free_shipping": 5000,
