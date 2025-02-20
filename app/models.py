@@ -88,7 +88,7 @@ class Product(db.Model):
             "stock_quantity": self.stock_quantity,
             "category_id": self.category_id,
             "is_available": self.is_available,
-            "attributes": self.attributes, # Include attributes in API responses
+            "attributes": self.attributes,  # Include attributes in API responses
             "reviews": [review.to_dict() for review in self.reviews]  # ✅ Include user info
         }
 
@@ -238,7 +238,6 @@ class ProductReview(db.Model):
                 "last_name": self.user.last_name
             } if self.user else None
         }
-
 
 
 class Session(db.Model):
