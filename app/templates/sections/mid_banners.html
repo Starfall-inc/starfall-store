@@ -1,0 +1,21 @@
+{# templates/sections/mid_banners.html #}
+<section class="mid-banners py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for banner in mid_banners %}
+      <div class="relative rounded-lg overflow-hidden">
+        <img src="{{ banner.image }}" alt="{{ banner.title }}" class="w-full h-[200px] object-cover">
+        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+          <div class="text-center text-white">
+            <h3 class="text-2xl font-bold">{{ banner.title }}</h3>
+            <p class="mt-2">{{ banner.subtitle }}</p>
+            <a href="{{ banner.link }}" class="inline-block mt-4 px-6 py-2 bg-white text-primary rounded-md">
+              Shop Now
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

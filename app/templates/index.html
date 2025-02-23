@@ -2,46 +2,103 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Promotion Slideshow Section -->
 <section class="bg-gradient-to-r from-primary to-secondary text-white py-20">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <h4 class="text-xl mb-2">Trade-in-offer</h4>
-        <h2 class="text-4xl font-bold mb-2">Super value deals</h2>
-        <h1 class="text-6xl font-bold mb-4">On all products</h1>
-        <p class="text-xl mb-8">Save more with coupons & up to 70% off!</p>
-        <a href="/shop" class="bg-white text-primary px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition duration-300">
-            Shop Now
-        </a>
+    <div class="max-w-7xl mx-auto px-4">
+        {% if promotions|length > 0 %}
+        <div class="relative overflow-hidden">
+            <!-- Slideshow -->
+            <div class="slideshow flex transition-all duration-500" id="promo-slideshow">
+                {% for promo in promotions %}
+                <div class="min-w-full text-center">
+                    <h4 class="text-xl mb-2">Special Offer</h4>
+                    <h1 class="text-6xl font-bold mb-4">{{ promo.title }}</h1>
+                    <p class="text-xl mb-8">{{ promo.description }}</p>
+                    {% if promo.link %}
+                    <button onclick="window.location.href='{{ promo.link }}'" class="bg-white text-primary px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition duration-300">Shop Now</button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Slideshow Navigation (if more than one promo) -->
+            {% if promotions|length > 1 %}
+            <button class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 p-2 rounded-full" onclick="slide(-1)">❮</button>
+            <button class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 p-2 rounded-full" onclick="slide(1)">❯</button>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- Loading Skeleton for Promotion -->
+        <div class="text-center animate-pulse">
+            <div class="h-6 bg-white/20 rounded w-1/4 mx-auto mb-2"></div>
+            <div class="h-12 bg-white/20 rounded w-1/2 mx-auto mb-4"></div>
+            <div class="h-5 bg-white/20 rounded w-3/4 mx-auto mb-8"></div>
+            <div class="h-10 bg-white/20 rounded-full w-32 mx-auto"></div>
+        </div>
+        {% endif %}
     </div>
 </section>
 
+<!-- Categories Section -->
 <section class="max-w-7xl mx-auto px-4 py-16">
+    <h2 class="text-3xl font-bold text-center mb-8">Shop by Category</h2>
+    {% if categories|length > 0 %}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {% for feature in features %}
+        {% for category in categories %}
         <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition duration-300">
-            <img src="{{ feature.icon }}" alt="{{ feature.title }}" class="w-16 h-16 mx-auto mb-4">
-            <h6 class="font-medium">{{ feature.title }}</h6>
+            <img src="{{ category.image or '/static/default-category.jpg' }}"
+                 alt="{{ category.name }}"
+                 class="w-16 h-16 mx-auto mb-4 object-cover">
+            <h6 class="font-medium">{{ category.name }}</h6>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <!-- Loading Skeleton for Categories -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {% for _ in range(6) %}
+        <div class="bg-white p-6 rounded-lg shadow-md animate-pulse">
+            <div class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
+            <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </section>
 
+<!-- Featured Products Section -->
 <section class="max-w-7xl mx-auto px-4 py-16">
     <h2 class="text-3xl font-bold text-center mb-2">Featured Products</h2>
-    <p class="text-gray-600 text-center mb-8">Summer Collection New Modern Design</p>
+    <p class="text-gray-600 text-center mb-8">Explore Our Top Picks</p>
+    {% if featured_products|length > 0 %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {% for product in featured_products %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300">
-            <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-64 object-cover">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300 cursor-pointer"
+             onclick="window.open('/product/{{ product.id }}', '_blank')">            <div class="relative group">
+                <!-- Product Image (Default: First Image) -->
+                <img src="{{ product.images[0].image_url if product.images else '/static/default-product.jpg' }}"
+                     alt="{{ product.name }}"
+                     class="w-full h-64 object-cover transition-opacity duration-300 group-hover:opacity-0">
+
+                <!-- Hover Image (Show Second Image if Available) -->
+                {% if product.images|length > 1 %}
+                <img src="{{ product.images[1].image_url }}"
+                     alt="{{ product.name }}"
+                     class="w-full h-64 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                {% endif %}
+            </div>
+
             <div class="p-4">
-                <span class="text-gray-500">{{ product.brand }}</span>
                 <h5 class="font-medium text-lg mb-2">{{ product.name }}</h5>
-                <div class="flex text-yellow-400 mb-2">
-                    {% for _ in range(product.stars) %}
-                    <i class="fas fa-star"></i>
-                    {% endfor %}
+
+                <!-- ⭐ Flipkart-Style Compact Rating Container -->
+                <div class="flex items-center bg-primary text-white text-xs font-bold px-2 py-1 rounded-md w-fit">
+                    <span class="text-xs">★</span>
+                    <span class="ml-1">{{ product.avg_rating }}</span>
                 </div>
+
+                <p class="text-gray-500 text-sm mt-2 mb-2">{{ product.description|truncate(50) }}</p>
                 <div class="flex justify-between items-center">
-                    <h4 class="text-xl font-bold text-primary">₹{{ product.price }}</h4>
+                    <h4 class="text-xl font-bold text-primary">{{ CURRENCY_SYMBOL }}{{ product.price }}</h4>
                     <button class="text-primary hover:text-secondary">
                         <i class="fas fa-shopping-cart"></i>
                     </button>
@@ -50,5 +107,42 @@
         </div>
         {% endfor %}
     </div>
+
+    {% else %}
+    <!-- Loading Skeleton for Products -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for _ in range(4) %}
+        <div class="bg-white rounded-lg shadow-md animate-pulse">
+            <div class="w-full h-64 bg-gray-200"></div>
+            <div class="p-4">
+                <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div class="flex justify-between">
+                    <div class="h-6 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-6 bg-gray-200 rounded w-6"></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </section>
+
+<!-- Slideshow Script -->
+{% if promotions|length > 1 %}
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('#promo-slideshow > div');
+    const totalSlides = slides.length;
+
+    function slide(direction) {
+        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+        const slideshow = document.getElementById('promo-slideshow');
+        slideshow.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    // Auto-slide every 5 seconds
+    setInterval(() => slide(1), 5000);
+</script>
+{% endif %}
 {% endblock %}

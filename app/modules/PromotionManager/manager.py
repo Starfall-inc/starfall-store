@@ -25,3 +25,10 @@ class PromotionManager:
             return result.to_dict()
         else:
             return None
+
+    @staticmethod
+    def get_all_active_promotions():
+        # Get all active promotions
+        result = Banner.query.filter_by(active=True).all()
+        return [promotion.to_dict() for promotion in result] if result else []
+

@@ -3,15 +3,32 @@ from app.extensions import db
 from app.extensions import seraphina
 from app.modules.ProductManager import ProductManager
 from app.modules.ReviewManager import ReviewManager
-
-
-
+from app.modules.PromotionManager import PromotionManager
 
 staticroute_bp = Blueprint("siteroute", __name__)
 
 
 @staticroute_bp.route('/')
 def index():
+    # Get promotions for slideshow
+    promotions = PromotionManager.get_active_promotions()
+
+    # Get featured products
+    featured_products = ProductManager.get_featured_products()
+
+    # Get all categories
+    categories = ProductManager.get_all_categories()
+
+    return render_template(
+        'index.html',
+        promotions=promotions,
+        featured_products=featured_products,
+        categories=categories
+    )
+
+
+@staticroute_bp.route('/orignal')
+def index_orignal():
     features = [
         {"icon": "static/images/f1.png", "title": "Free Shipping"},
         {"icon": "static/images/f2.png", "title": "Save Time"},
@@ -33,8 +50,6 @@ def index():
     ]
 
     seraphina.info("Rendering index page")
-
-
 
     return render_template('index.html',
                            features=features,

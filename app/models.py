@@ -40,6 +40,7 @@ class ProductCategory(db.Model):
     __tablename__ = 'product_category'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
+    category_image = db.Column(db.String(255))
     description = db.Column(db.String(255))
 
     products = db.relationship('Product', backref='category_rel', lazy=True)
@@ -75,6 +76,13 @@ class Product(db.Model):
     # One-to-Many Relationship with ProductImage
     images = db.relationship("ProductImage", back_populates="product", cascade="all, delete-orphan")
 
+    @property
+    def average_rating(self):
+        if not self.reviews:
+            return 0
+        return round(sum(review.rating for review in self.reviews) / len(self.reviews), 2)  # Rounds to 2 decimal places
+
+
     def __repr__(self):
         return f'<Product {self.name}>'
 
@@ -89,7 +97,8 @@ class Product(db.Model):
             "category_id": self.category_id,
             "is_available": self.is_available,
             "attributes": self.attributes,  # Include attributes in API responses
-            "reviews": [review.to_dict() for review in self.reviews]  # ✅ Include user info
+            "reviews": [review.to_dict() for review in self.reviews],  # ✅ Include user info
+            "avg_rating": self.average_rating,
         }
 
 

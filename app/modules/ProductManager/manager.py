@@ -1,7 +1,7 @@
 from app.models import db, Product, ProductCategory
 from sqlalchemy.exc import SQLAlchemyError
-from app.extensions import db # ✅ Import from extensions.py
-from app.extensions import seraphina as logger # ✅ Import from extensions.py
+from app.extensions import db  # ✅ Import from extensions.py
+from app.extensions import seraphina as logger  # ✅ Import from extensions.py
 
 
 class ProductManager:
@@ -24,6 +24,7 @@ class ProductManager:
             "tags": product.tags,
             "attributes": product.attributes,
             "is_featured": product.is_featured,
+            "avg_rating": product.average_rating,
         }
 
     @staticmethod
@@ -41,6 +42,7 @@ class ProductManager:
                 "images": [image.to_dict() for image in product.images],  # Convert images properly
                 "tags": product.tags,
                 "is_featured": product.is_featured,
+                "avg_rating": product.avg_rating,
             }
             for product in products
         ]
@@ -58,6 +60,7 @@ class ProductManager:
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],  # Convert images properly
                 "tags": product.tags,
+                "avg_rating": product.avg_rating,
             }
             for product in products
         ]
@@ -75,6 +78,7 @@ class ProductManager:
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],  # Convert images properly
                 "tags": product.tags,
+                "avg_rating": product.average_rating,
             }
             for product in products
         ]
@@ -112,12 +116,13 @@ class ProductManager:
                 "stock_quantity": product.stock_quantity,
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],
+                "avg_rating": product.avg_rating,
                 "tags": product.tags,
             }
             for product in products
         ]
 
-    @classmethod
+    @staticmethod
     def get_featured_products_by_category(cls, category_id):
         products = Product.query.filter(
             db.and_(
@@ -135,7 +140,21 @@ class ProductManager:
                 "stock_quantity": product.stock_quantity,
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],
+                "avg_rating": product.avg_rating,
                 "tags": product.tags,
             }
             for product in products
+        ]
+
+    @staticmethod
+    def get_all_categories():
+        categories = ProductCategory.query.all()
+        return [
+            {
+                "id": category.id,
+                "name": category.name,
+                "description": category.description,
+                "image": category.category_image,
+            }
+            for category in categories
         ]

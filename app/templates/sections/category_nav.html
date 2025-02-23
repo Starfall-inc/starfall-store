@@ -1,0 +1,13 @@
+{# templates/sections/category_nav.html #}
+<div class="category-nav bg-white shadow-md py-4">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex overflow-x-auto space-x-8 no-scrollbar">
+            {% for category in categories %}
+            <a href="{{ category.link }}" class="flex flex-col items-center flex-shrink-0">
+                <img src="{{ category.icon }}" alt="{{ category.name }}" class="w-16 h-16 object-contain">
+                <span class="text-sm mt-2">{{ category.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>

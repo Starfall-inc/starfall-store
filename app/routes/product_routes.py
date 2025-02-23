@@ -18,7 +18,7 @@ def get_products():
 
     # If not in cache, fetch normally and cache it
     products = ProductManager.get_all_products()
-    products_dict = [product.to_dict() for product in products]
+    products_dict = [product for product in products]
     cache.set(cache_key, products_dict, timeout=60 * 60)  # Cache for 1 hour
 
     seraphina.info("Fetched products normally and cached the result.")
@@ -56,8 +56,28 @@ def get_featured_products():
 
     # If not in cache, fetch normally and cache it
     products = ProductManager.get_featured_products()
-    featured_products_dict = [product.to_dict() for product in products]
+    featured_products_dict = [product for product in products]
     cache.set(cache_key, featured_products_dict, timeout=60 * 60)  # Cache for 1 hour
 
     seraphina.info("Fetched featured products normally and cached the result.")
     return jsonify(featured_products_dict)
+
+
+# 🟢 Get all product categories
+@product_bp.route("/categories", methods=["GET"])
+def get_product_categories():
+    cache_key = "product_categories"
+    cached_categories = cache.get(cache_key)
+
+    if cached_categories:
+        seraphina.info("Fetched product categories from cache.")
+        return jsonify(cached_categories)
+
+    # If not in cache, fetch normally and cache it
+    categories = ProductManager.get_all_categories()
+    categories_dict = [category for category in categories]
+    cache.set(cache_key, categories_dict, timeout=60 * 60)
+
+    seraphina.info("Fetched product categories normally and cached the result.")
+    return jsonify(categories_dict)
+
