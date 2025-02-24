@@ -69,3 +69,9 @@ def render_login_page():
 @staticroute_bp.route('/auth/signup', methods=['GET'])
 def render_signup_page():
     return render_template('auth/signup.html')
+
+
+@staticroute_bp.route('/search', methods=['GET'])
+def search():
+    search_term = request.args.get("q")
+    return render_template('search.html', query=search_term)

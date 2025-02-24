@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block title %}{{ SHOP_NAME }} - Search Results{% endblock %}
+
+{% block content %}
+
+<!-- CSS to add to your stylesheet -->
+<style>
+    /* Price slider tooltip styling */
+    #price-tooltip {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    /* Custom slider thumb for better appearance */
+    #price-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--color-primary, #4f46e5);
+        cursor: pointer;
+    }
+
+    #price-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--color-primary, #4f46e5);
+        cursor: pointer;
+        border: none;
+    }
+
+    /* Ensure all filter content sections start closed with proper transitions */
+    .filter-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    /* Ensure chevron rotations are smooth */
+    .filter-chevron {
+        transition: transform 0.3s ease;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-6">
+    <!-- Mobile Filter Toggle Button -->
+    <button id="filter-toggle" class="md:hidden w-full bg-primary text-white py-2 px-4 rounded-lg mb-4 flex items-center justify-between">
+        <span class="font-medium">Filters</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+    </button>
+
+    <!-- Skeleton Loader -->
+    <div id="skeleton" class="animate-pulse">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Filters Skeleton -->
+            <div class="hidden md:block bg-primary h-96 rounded-lg"></div>
+            <!-- Results Skeleton -->
+            <div class="col-span-1 md:col-span-3">
+                <div class="h-8 bg-primary rounded w-3/4 mb-6"></div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {% for _ in range(8) %}
+                    <div class="bg-primary aspect-[3/4] rounded-lg"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Content (initially hidden) -->
+    <div id="search-content" class="hidden opacity-0 transition-opacity duration-500">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Filters Sidebar -->
+            <div id="filters-sidebar" class="hidden md:block bg-white rounded-lg shadow-md p-4 h-fit sticky top-4 transition-all duration-300 ease-in-out">
+                <h2 class="text-xl font-bold text-text mb-4 flex items-center justify-between">
+                    <span>Filters</span>
+                    <button id="close-filters" class="md:hidden text-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </h2>
+
+                <!-- Collapsible Filter Sections -->
+                <!-- Price Filter (Slider) with Fixed Tooltip -->
+                <div class="filter-section mb-4">
+                    <button class="flex justify-between items-center w-full py-2 text-left font-medium">
+                        <span>Price Range</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="filter-content space-y-2 overflow-hidden transition-all duration-300">
+                        <div class="relative pt-5 pb-2">
+                            <input type="range" id="price-slider" min="0" max="1000" step="1" value="0"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                   oninput="updatePriceTooltip(this)">
+                            <div id="price-tooltip" class="absolute top-0 transform -translate-x-1/2 bg-primary text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 pointer-events-none">
+                                $0.00
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm text-text">
+                            <span>{{ CURRENCY_SYMBOL }}<span id="min-price">0.00</span></span>
+                            <span>{{ CURRENCY_SYMBOL }}<span id="max-price">1000.00</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating Filter with Fixed Collapsing -->
+                <div class="filter-section mb-4">
+                    <button class="flex justify-between items-center w-full py-2 text-left font-medium">
+                        <span>Rating</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="filter-content space-y-2 overflow-hidden transition-all duration-300">
+                        {% for i in range(5, 0, -1) %}
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="rating" value="{{ i }}" class="accent-primary">
+                            <span class="text-text flex items-center">
+                                {{ "★" * i }}{{ "☆" * (5 - i) }}
+                                <span class="ml-1">& Up</span>
+                            </span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Dynamic Attribute Filters -->
+                <div id="attribute-filters" class="space-y-4"></div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="col-span-1 md:col-span-3 space-y-4">
+                <h2 class="text-xl md:text-2xl font-bold text-text">Search Results for "{{ query }}"</h2>
+                <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+
+                <!-- Empty Results State -->
+                <div id="empty-results" class="hidden text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-lg text-gray-600 mt-4">No products match your filters</p>
+                    <button id="reset-filters" class="mt-4 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition-colors">
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-4 rounded-lg shadow-lg">
+            <div class="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+            <p class="text-center mt-2">Loading...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Required Scripts -->
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+
+<script>
+    // Function to format price with commas
+    function formatPrice(value) {
+        if (!value || value == 0) {
+            return "0.00";
+        }
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Function to handle filter sections toggle
+    function setupFilterSections() {
+        document.querySelectorAll('.filter-section button').forEach(button => {
+            button.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const chevron = this.querySelector('.filter-chevron');
+
+                // Toggle content visibility
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    chevron.style.transform = 'rotate(-180deg)';
+                }
+            });
+
+            // Open filters by default
+            button.click();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const skeleton = document.getElementById('skeleton');
+        const searchContent = document.getElementById('search-content');
+        const resultsContainer = document.getElementById('results-container');
+        const attributeFilters = document.getElementById('attribute-filters');
+        const priceSlider = document.getElementById('price-slider');
+        const priceTooltip = document.getElementById('price-tooltip');
+        const minPriceElement = document.getElementById('min-price');
+        const maxPriceElement = document.getElementById('max-price');
+        const emptyResults = document.getElementById('empty-results');
+        const filterToggle = document.getElementById('filter-toggle');
+        const filtersSidebar = document.getElementById('filters-sidebar');
+        const closeFilters = document.getElementById('close-filters');
+        const resetFilters = document.getElementById('reset-filters');
+        const query = "{{ query }}"; // Placeholder for the query from Flask
+
+        let data = []; // Store all products
+        let minPrice = 0;
+        let maxPrice = 1000; // Default, will update dynamically
+
+        // Mobile filter toggle
+        filterToggle.addEventListener('click', function() {
+            filtersSidebar.classList.remove('hidden');
+            filtersSidebar.classList.add('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+        });
+
+        closeFilters.addEventListener('click', function() {
+            filtersSidebar.classList.add('hidden');
+            filtersSidebar.classList.remove('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+        });
+
+        // Reset filters
+        resetFilters.addEventListener('click', function() {
+            priceSlider.value = priceSlider.min;
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            applyFilters();
+        });
+
+        // Price tooltip function - FIXED
+        function updatePriceTooltip(slider) {
+            const value = parseFloat(slider.value);
+            priceTooltip.textContent = `{{ CURRENCY_SYMBOL }}${formatPrice(value)}`;
+            priceTooltip.classList.add('opacity-100'); // Make sure tooltip is visible
+            priceTooltip.classList.remove('opacity-0');
+
+            // Calculate position based on slider value percentage
+            const percent = ((value - slider.min) / (slider.max - slider.min)) * 100;
+            const thumbPosition = `calc(${percent}% - ${percent * 0.2}px)`;
+            priceTooltip.style.left = thumbPosition;
+        }
+
+        // Show tooltip when hovering or interacting with slider
+        priceSlider.addEventListener('mouseover', () => {
+            updatePriceTooltip(priceSlider);
+        });
+
+        priceSlider.addEventListener('mouseout', () => {
+            priceTooltip.classList.add('opacity-0');
+        });
+
+        // Keep tooltip visible during interaction
+        priceSlider.addEventListener('input', () => {
+            updatePriceTooltip(priceSlider);
+        });
+
+        // Fetch search results and set up filters
+        fetch(`/api/product/search?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(responseData => {
+                data = responseData;
+
+                // Set min and max price dynamically
+                const prices = data.map(product => product.price);
+                if (prices.length > 0) {
+                    minPrice = Math.min(...prices);
+                    maxPrice = Math.max(...prices);
+                    priceSlider.min = minPrice;
+                    priceSlider.max = maxPrice;
+                    priceSlider.value = maxPrice; // Start with showing all products
+                    minPriceElement.textContent = formatPrice(minPrice);
+                    maxPriceElement.textContent = formatPrice(maxPrice);
+                }
+
+                // Collect unique attributes for filters
+                const attributes = {};
+                data.forEach(product => {
+                    if (product.attributes) {
+                        Object.entries(product.attributes).forEach(([key, value]) => {
+                            if (!attributes[key]) attributes[key] = new Set();
+                            attributes[key].add(value);
+                        });
+                    }
+                });
+
+                // Generate attribute filters - FIXED to prevent duplicates
+                const processedAttributes = new Set(); // Track processed attributes to avoid duplicates
+
+                Object.entries(attributes).forEach(([attribute, values]) => {
+                    // Skip if this attribute has already been processed
+                    if (processedAttributes.has(attribute.toLowerCase())) return;
+
+                    // Add to processed set
+                    processedAttributes.add(attribute.toLowerCase());
+
+                    const filterSection = document.createElement('div');
+                    filterSection.className = 'filter-section mb-4';
+
+                    const button = document.createElement('button');
+                    button.className = 'flex justify-between items-center w-full py-2 text-left font-medium filter-toggle-btn';
+                    button.innerHTML = `
+                    <span class="capitalize">${attribute}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                `;
+
+                    const content = document.createElement('div');
+                    content.className = 'filter-content space-y-2 overflow-hidden transition-all duration-300 max-h-0';
+
+                    Array.from(values).forEach(value => {
+                        content.innerHTML += `
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="${attribute}" value="${value}" class="accent-primary">
+                            <span class="text-text">${value}</span>
+                        </label>
+                    `;
+                    });
+
+                    filterSection.appendChild(button);
+                    filterSection.appendChild(content);
+                    attributeFilters.appendChild(filterSection);
+                });
+
+                // Display search results
+                renderProducts(data);
+
+                // Hide skeleton and show content with animation
+                skeleton.classList.add('hidden');
+                searchContent.classList.remove('hidden');
+                setTimeout(() => {
+                    searchContent.classList.remove('opacity-0');
+                }, 50);
+
+                // Setup collapsible filters - FIXED
+                setupFilterToggle();
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+            });
+
+        // FIXED filter toggle functionality
+        function setupFilterToggle() {
+            document.querySelectorAll('.filter-toggle-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const chevron = this.querySelector('.filter-chevron');
+
+                    // Toggle content visibility
+                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                        // Close the filter
+                        content.style.maxHeight = '0px';
+                        chevron.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Open the filter
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        chevron.style.transform = 'rotate(180deg)';
+                    }
+                });
+
+                // Open filters by default
+                button.click();
+            });
+
+            // Also set up the built-in filter sections
+            document.querySelectorAll('.filter-section > button:not(.filter-toggle-btn)').forEach(button => {
+                const content = button.nextElementSibling;
+                const chevron = button.querySelector('.filter-chevron');
+
+                button.addEventListener('click', function() {
+                    // Toggle content visibility
+                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                        // Close the filter
+                        content.style.maxHeight = '0px';
+                        chevron.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Open the filter
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        chevron.style.transform = 'rotate(180deg)';
+                    }
+                });
+
+                // Open filters by default
+                content.style.maxHeight = content.scrollHeight + 'px';
+                chevron.style.transform = 'rotate(180deg)';
+            });
+        }
+
+        function renderProducts(products) {
+            resultsContainer.innerHTML = '';
+
+            if (products.length === 0) {
+                emptyResults.classList.remove('hidden');
+            } else {
+                emptyResults.classList.add('hidden');
+            }
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer';
+                productCard.setAttribute('data-product-id', product.id);
+                productCard.onclick = function() {
+                    window.location.href = `/product/${product.id}`;
+                };
+
+                // Get first image or placeholder
+                const imageUrl = product.images && product.images.length > 0
+                    ? product.images[0].image_url
+                    : 'https://via.placeholder.com/300';
+
+                productCard.innerHTML = `
+                <div class="relative">
+                    <img src="${imageUrl}" alt="${product.name}" class="w-full aspect-square object-cover">
+                    <div class="absolute top-0 right-0 bg-primary text-white px-2 py-1 text-sm font-semibold">
+                        ${product.avg_rating ? product.avg_rating.toFixed(1) : '0.0'} ★
+                    </div>
+                </div>
+                <div class="p-3">
+                    <h3 class="text-sm font-medium text-text line-clamp-2">${product.name}</h3>
+                    <p class="text-primary text-lg font-bold mt-1">{{ CURRENCY_SYMBOL }}${formatPrice(product.price)}</p>
+                </div>
+            `;
+
+                resultsContainer.appendChild(productCard);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const selectedPrice = parseFloat(priceSlider.value);
+            const ratingChecks = document.querySelectorAll('input[name="rating"]:checked');
+            const ratings = Array.from(ratingChecks).map(cb => parseInt(cb.value));
+
+            // Get all attribute filters
+            const attributeFilters = {};
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                if (cb.name !== 'rating') {
+                    if (!attributeFilters[cb.name]) attributeFilters[cb.name] = [];
+                    attributeFilters[cb.name].push(cb.value);
+                }
+            });
+
+            // Filter the products
+            const filtered = data.filter(product => {
+                // Price filter - show products up to the selected price
+                const priceMatch = product.price <= selectedPrice;
+
+                // Rating filter
+                const ratingMatch = ratings.length === 0 ||
+                    ratings.some(r => Math.round(product.avg_rating || 0) >= r);
+
+                // Attribute filters
+                const attributeMatch = Object.entries(attributeFilters).every(([key, values]) => {
+                    // If no values selected for this attribute, all products match
+                    if (values.length === 0) return true;
+
+                    // If product doesn't have this attribute, it doesn't match
+                    if (!product.attributes || !product.attributes[key]) return false;
+
+                    // Check if product's attribute value is in selected values
+                    return values.includes(product.attributes[key]);
+                });
+
+                return priceMatch && ratingMatch && attributeMatch;
+            });
+
+            renderProducts(filtered);
+        }
+
+        // Apply filters when any filter changes
+        priceSlider.addEventListener('input', applyFilters);
+        priceSlider.addEventListener('change', applyFilters);
+
+        // Event delegation for dynamically created checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.type === 'checkbox') {
+                applyFilters();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -60,7 +60,7 @@ class ProductManager:
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],  # Convert images properly
                 "tags": product.tags,
-                "avg_rating": product.avg_rating,
+                "avg_rating": product.average_rating,
             }
             for product in products
         ]
@@ -116,8 +116,9 @@ class ProductManager:
                 "stock_quantity": product.stock_quantity,
                 "weight": float(product.weight),
                 "images": [image.to_dict() for image in product.images],
-                "avg_rating": product.avg_rating,
+                "avg_rating": product.average_rating,
                 "tags": product.tags,
+                "attributes": product.attributes,
             }
             for product in products
         ]

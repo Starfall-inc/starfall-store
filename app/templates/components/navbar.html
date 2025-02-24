@@ -2,22 +2,22 @@
 <nav class="bg-white shadow-lg relative">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-            <a href="/" class="flex-shrink-0 flex items-center">
-                <img class="h-12 w-auto" src="{{ url_for('static', filename='images/mascot.png') }}" alt="Logo">
-                <span class="ml-2 text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    {{ SHOP_NAME }}
-                </span>
-            </a>
-            {# Desktop Navigation #}
-            <div class="hidden md:flex ml-10 space-x-8">
-                <a href="/" class="text-primary hover:text-secondary px-3 py-2 font-medium">Home</a>
-                <a href="/shop" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Shop</a>
-                <a href="/blog" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Blog</a>
-                <a href="/about" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">About</a>
-                <a href="/contact" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Contact</a>
+            <div class="flex items-center">
+                <a href="/" class="flex-shrink-0 flex items-center">
+                    <img class="h-12 w-auto" src="{{ url_for('static', filename='images/mascot.png') }}" alt="Logo">
+                    <span class="ml-2 text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        {{ SHOP_NAME }}
+                    </span>
+                </a>
+                {# Desktop Navigation #}
+                <div class="hidden md:flex ml-10 space-x-8 items-center">
+                    <a href="/" class="text-primary hover:text-secondary px-3 py-2 font-medium">Home</a>
+                    <a href="/shop" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Shop</a>
+                    <a href="/blog" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Blog</a>
+                    <a href="/about" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Contact</a>
+                </div>
             </div>
-        </div>
             <div class="flex items-center space-x-4">
                 <a href="/cart" class="text-gray-700 hover:text-primary">
                     <i class="fas fa-shopping-cart text-xl"></i>
@@ -25,11 +25,33 @@
                 <a href="/login" class="text-gray-700 hover:text-primary">
                     <i class="fas fa-user-circle text-xl"></i>
                 </a>
-                {# Mobile menu button #}
+                <!-- Search Button for Both Desktop and Mobile -->
+                <button id="search-button" class="text-gray-700 hover:text-primary">
+                    <i class="fas fa-search text-xl"></i>
+                </button>
+                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-primary">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
+        </div>
+    </div>
+
+    {# Search Overlay #}
+    <div id="search-overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="absolute top-4 left-4 right-4 bg-white shadow-lg rounded-lg transform translate-y-[-100%] transition-transform duration-300 ease-in-out max-w-2xl mx-auto">
+            <div class="p-4 flex items-center">
+                <i class="fas fa-search text-gray-400 mr-3"></i>
+                <input type="text" id="search-input" placeholder="Search anything..." class="w-full text-lg focus:outline-none">
+                <button id="submit-search" class="ml-4 text-primary hover:text-secondary hidden md:block">
+                    <i class="fas fa-arrow-right text-xl"></i>
+                </button>
+                <button id="close-search" class="ml-4 text-gray-500 hover:text-primary">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <!-- Search History/Suggestions -->
+            <div id="search-history" class="max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-b-lg"></div>
         </div>
     </div>
 
@@ -50,6 +72,7 @@
                 <div class="flex flex-col space-y-4">
                     <a href="/" class="text-primary hover:text-secondary py-2 font-medium">Home</a>
                     <a href="/shop" class="text-gray-700 hover:text-primary py-2 font-medium">Shop</a>
+                    <a href="/blog" class="text-gray-700 hover:text-primary py-2 font-medium">Blog</a>
                     <a href="/about" class="text-gray-700 hover:text-primary py-2 font-medium">About</a>
                     <a href="/contact" class="text-gray-700 hover:text-primary py-2 font-medium">Contact</a>
                 </div>
@@ -59,42 +82,123 @@
 </nav>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const closeSidebarButton = document.getElementById('close-sidebar');
-    const mobileSidebar = document.getElementById('mobile-sidebar');
-    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-    const mainContent = document.querySelector('main');
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchButton = document.getElementById('search-button');
+        const closeSearchButton = document.getElementById('close-search');
+        const submitSearchButton = document.getElementById('submit-search');
+        const searchOverlay = document.getElementById('search-overlay');
+        const searchInput = document.getElementById('search-input');
+        const searchHistory = document.getElementById('search-history');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeSidebarButton = document.getElementById('close-sidebar');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const mainContent = document.querySelector('main');
 
-    function openSidebar() {
-        mobileSidebar.classList.remove('translate-x-full');
-        sidebarBackdrop.classList.add('opacity-50');
-        document.body.style.overflow = 'hidden';
-        mainContent.classList.add('blur-sm');
-    }
+        // Load search history from LocalStorage
+        let searchHistoryData = JSON.parse(localStorage.getItem('searchHistory')) || [];
+        const MAX_HISTORY = 5; // Limit history to 5 items
 
-    function closeSidebar() {
-        mobileSidebar.classList.add('translate-x-full');
-        sidebarBackdrop.classList.remove('opacity-50');
-        document.body.style.overflow = '';
-        mainContent.classList.remove('blur-sm');
-    }
-
-    mobileMenuButton.addEventListener('click', openSidebar);
-    closeSidebarButton.addEventListener('click', closeSidebar);
-    sidebarBackdrop.addEventListener('click', closeSidebar);
-
-    // Close sidebar on navigation
-    const sidebarLinks = mobileSidebar.querySelectorAll('a');
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', closeSidebar);
-    });
-
-    // Handle escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeSidebar();
+        function saveSearchHistory(query) {
+            // Remove duplicates and add new query
+            searchHistoryData = searchHistoryData.filter(item => item.toLowerCase() !== query.toLowerCase());
+            searchHistoryData.unshift(query);
+            if (searchHistoryData.length > MAX_HISTORY) {
+                searchHistoryData.pop();
+            }
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistoryData));
+            updateSearchHistory();
         }
+
+        function updateSearchHistory() {
+            searchHistory.innerHTML = '';
+            if (searchHistoryData.length > 0) {
+                searchHistoryData.forEach(query => {
+                    const div = document.createElement('div');
+                    div.className = 'p-2 hover:bg-gray-100 cursor-pointer text-gray-700 rounded';
+                    div.textContent = query;
+                    div.addEventListener('click', () => {
+                        searchInput.value = query;
+                        performSearch(query);
+                    });
+                    searchHistory.appendChild(div);
+                });
+            }
+        }
+
+        function openSearchOverlay() {
+            searchOverlay.classList.remove('hidden');
+            setTimeout(() => searchOverlay.querySelector('.bg-white').classList.remove('translate-y-[-100%]'), 10);
+            searchInput.focus();
+            document.body.style.overflow = 'hidden';
+            mainContent.classList.add('blur-sm');
+            updateSearchHistory(); // Show history when overlay opens
+        }
+
+        function closeSearchOverlay() {
+            searchOverlay.querySelector('.bg-white').classList.add('translate-y-[-100%]');
+            setTimeout(() => searchOverlay.classList.add('hidden'), 300);
+            document.body.style.overflow = '';
+            mainContent.classList.remove('blur-sm');
+        }
+
+        function openSidebar() {
+            mobileSidebar.classList.remove('translate-x-full');
+            sidebarBackdrop.classList.add('opacity-50');
+            document.body.style.overflow = 'hidden';
+            mainContent.classList.add('blur-sm');
+        }
+
+        function closeSidebar() {
+            mobileSidebar.classList.add('translate-x-full');
+            sidebarBackdrop.classList.remove('opacity-50');
+            document.body.style.overflow = '';
+            mainContent.classList.remove('blur-sm');
+        }
+
+        function performSearch(query) {
+            if (query.trim()) {
+                saveSearchHistory(query); // Save before redirecting
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        searchButton.addEventListener('click', openSearchOverlay);
+        closeSearchButton.addEventListener('click', closeSearchOverlay);
+        searchOverlay.addEventListener('click', (e) => {
+            if (e.target === searchOverlay) closeSearchOverlay();
+        });
+
+        // Submit search on Enter key or submit button
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch(searchInput.value);
+            }
+        });
+
+        submitSearchButton.addEventListener('click', () => {
+            performSearch(searchInput.value);
+        });
+
+        mobileMenuButton.addEventListener('click', openSidebar);
+        closeSidebarButton.addEventListener('click', closeSidebar);
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+
+        // Close sidebar on navigation
+        const sidebarLinks = mobileSidebar.querySelectorAll('a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', closeSidebar);
+        });
+
+        // Handle escape key for both search and sidebar
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!searchOverlay.classList.contains('hidden')) {
+                    closeSearchOverlay();
+                } else if (!mobileSidebar.classList.contains('translate-x-full')) {
+                    closeSidebar();
+                }
+            }
+        });
     });
-});
 </script>

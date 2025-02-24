@@ -81,3 +81,20 @@ def get_product_categories():
     seraphina.info("Fetched product categories normally and cached the result.")
     return jsonify(categories_dict)
 
+
+# search products by query
+@product_bp.route("/search", methods=["GET"])
+def search_products():
+    query = request.args.get("query")
+    seraphina.info(f"Searching for products with query: {query}")
+    products = ProductManager.search_products(query)
+    products_dict = [product for product in products]
+    return jsonify(products_dict)
+
+
+# get product under specific category by category_id
+@product_bp.route("/category/<int:category_id>", methods=["GET"])
+def get_products_by_category(category_id):
+    products = ProductManager.get_products_by_category(category_id)
+    products_dict = [product for product in products]
+    return jsonify(products_dict)

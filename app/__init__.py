@@ -3,6 +3,7 @@ from flask import Flask
 from app.Seraphina import Seraphina
 from app.config import config
 from app.extensions import db, seraphina, init_seraphina, init_redis, init_cache
+from app.utils.template_utils import format_price
 import os
 from sqlalchemy import inspect
 
@@ -13,6 +14,10 @@ def create_app():
     # Load config
     env = os.getenv("ENV", "prod")
     app.config.from_object(config[env])
+
+    # setting up helper utils
+
+    app.jinja_env.filters['format_price'] = format_price
 
     # Initialize database
     db.init_app(app)
