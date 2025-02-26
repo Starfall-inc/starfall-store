@@ -1,1 +1,1 @@
-from
+from .manager import CartManager

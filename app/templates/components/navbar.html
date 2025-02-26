@@ -11,11 +11,10 @@
                 </a>
                 {# Desktop Navigation #}
                 <div class="hidden md:flex ml-10 space-x-8 items-center">
-                    <a href="/" class="text-primary hover:text-secondary px-3 py-2 font-medium">Home</a>
-                    <a href="/shop" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Shop</a>
-                    <a href="/blog" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Blog</a>
-                    <a href="/about" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">About</a>
-                    <a href="/contact" class="text-gray-700 hover:text-primary px-3 py-2 font-medium">Contact</a>
+                    <a href="/" class="nav-link text-gray-700 hover:text-primary px-3 py-2 font-medium">Home</a>
+                    <a href="/shop" class="nav-link text-gray-700 hover:text-primary px-3 py-2 font-medium">Shop</a>
+                    <a href="/about" class="nav-link text-gray-700 hover:text-primary px-3 py-2 font-medium">About</a>
+                    <a href="/contact" class="nav-link text-gray-700 hover:text-primary px-3 py-2 font-medium">Contact</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -70,11 +69,10 @@
                     </button>
                 </div>
                 <div class="flex flex-col space-y-4">
-                    <a href="/" class="text-primary hover:text-secondary py-2 font-medium">Home</a>
-                    <a href="/shop" class="text-gray-700 hover:text-primary py-2 font-medium">Shop</a>
-                    <a href="/blog" class="text-gray-700 hover:text-primary py-2 font-medium">Blog</a>
-                    <a href="/about" class="text-gray-700 hover:text-primary py-2 font-medium">About</a>
-                    <a href="/contact" class="text-gray-700 hover:text-primary py-2 font-medium">Contact</a>
+                    <a href="/" class="nav-link text-primary hover:text-secondary py-2 font-medium">Home</a>
+                    <a href="/shop" class="nav-link text-gray-700 hover:text-primary py-2 font-medium">Shop</a>
+                    <a href="/about" class="nav-link text-gray-700 hover:text-primary py-2 font-medium">About</a>
+                    <a href="/contact" class="nav-link text-gray-700 hover:text-primary py-2 font-medium">Contact</a>
                 </div>
             </div>
         </div>
@@ -82,123 +80,142 @@
 </nav>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchButton = document.getElementById('search-button');
-        const closeSearchButton = document.getElementById('close-search');
-        const submitSearchButton = document.getElementById('submit-search');
-        const searchOverlay = document.getElementById('search-overlay');
-        const searchInput = document.getElementById('search-input');
-        const searchHistory = document.getElementById('search-history');
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const closeSidebarButton = document.getElementById('close-sidebar');
-        const mobileSidebar = document.getElementById('mobile-sidebar');
-        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-        const mainContent = document.querySelector('main');
+document.addEventListener('DOMContentLoaded', function() {
+    const searchButton = document.getElementById('search-button');
+    const searchSubmitButton = document.getElementById('submit-search');
+    const closeSearchButton = document.getElementById('close-search');
+    const searchOverlay = document.getElementById('search-overlay');
+    const searchInput = document.getElementById('search-input');
+    const searchHistory = document.getElementById('search-history');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeSidebarButton = document.getElementById('close-sidebar');
+    const mobileSidebar = document.getElementById('mobile-sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const mainContent = document.querySelector('main');
 
-        // Load search history from LocalStorage
-        let searchHistoryData = JSON.parse(localStorage.getItem('searchHistory')) || [];
-        const MAX_HISTORY = 5; // Limit history to 5 items
+    // Load search history from localStorage
+    let searchHistoryData = JSON.parse(localStorage.getItem('searchHistory')) || [];
 
-        function saveSearchHistory(query) {
-            // Remove duplicates and add new query
-            searchHistoryData = searchHistoryData.filter(item => item.toLowerCase() !== query.toLowerCase());
-            searchHistoryData.unshift(query);
-            if (searchHistoryData.length > MAX_HISTORY) {
-                searchHistoryData.pop();
-            }
-            localStorage.setItem('searchHistory', JSON.stringify(searchHistoryData));
-            updateSearchHistory();
-        }
+    function saveSearchHistory(query) {
+        if (!query.trim()) return;
+        searchHistoryData = [query.trim(), ...searchHistoryData.filter(q => q !== query.trim())].slice(0, 5);
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistoryData));
+        displaySearchHistory();
+    }
 
-        function updateSearchHistory() {
-            searchHistory.innerHTML = '';
-            if (searchHistoryData.length > 0) {
-                searchHistoryData.forEach(query => {
-                    const div = document.createElement('div');
-                    div.className = 'p-2 hover:bg-gray-100 cursor-pointer text-gray-700 rounded';
-                    div.textContent = query;
-                    div.addEventListener('click', () => {
-                        searchInput.value = query;
-                        performSearch(query);
-                    });
-                    searchHistory.appendChild(div);
+    function displaySearchHistory() {
+        searchHistory.innerHTML = '';
+        if (searchHistoryData.length > 0) {
+            searchHistoryData.forEach(query => {
+                const item = document.createElement('div');
+                item.className = 'p-2 hover:bg-gray-100 cursor-pointer text-gray-700 rounded';
+                item.textContent = query;
+                item.addEventListener('click', () => {
+                    searchInput.value = query;
+                    performSearch(query);
                 });
+                searchHistory.appendChild(item);
+            });
+        } else {
+            searchHistory.innerHTML = '<p class="p-2 text-gray-500">No search history</p>';
+        }
+    }
+
+    function openSearchOverlay() {
+        searchOverlay.classList.remove('hidden');
+        setTimeout(() => searchOverlay.querySelector('.bg-white').classList.remove('translate-y-[-100%]'), 10);
+        searchInput.focus();
+        displaySearchHistory();
+        document.body.style.overflow = 'hidden';
+        mainContent.classList.add('blur-sm');
+    }
+
+    function closeSearchOverlay() {
+        searchOverlay.querySelector('.bg-white').classList.add('translate-y-[-100%]');
+        setTimeout(() => searchOverlay.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+        mainContent.classList.remove('blur-sm');
+    }
+
+    function performSearch(query) {
+        if (query.trim()) {
+            saveSearchHistory(query);
+            window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+        }
+    }
+
+    function openSidebar() {
+        mobileSidebar.classList.remove('translate-x-full');
+        sidebarBackdrop.classList.add('opacity-50');
+        document.body.style.overflow = 'hidden';
+        mainContent.classList.add('blur-sm');
+    }
+
+    function closeSidebar() {
+        mobileSidebar.classList.add('translate-x-full');
+        sidebarBackdrop.classList.remove('opacity-50');
+        document.body.style.overflow = '';
+        mainContent.classList.remove('blur-sm');
+    }
+
+    searchButton.addEventListener('click', openSearchOverlay);
+    searchSubmitButton.addEventListener('click', () => performSearch(searchInput.value));
+    closeSearchButton.addEventListener('click', closeSearchOverlay);
+    searchOverlay.addEventListener('click', (e) => {
+        if (e.target === searchOverlay) closeSearchOverlay();
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch(searchInput.value);
+    });
+
+    mobileMenuButton.addEventListener('click', openSidebar);
+    closeSidebarButton.addEventListener('click', closeSidebar);
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Close sidebar on navigation
+    const sidebarLinks = mobileSidebar.querySelectorAll('a');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+
+    // Handle escape key for both search and sidebar
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (!searchOverlay.classList.contains('hidden')) {
+                closeSearchOverlay();
+            } else if (!mobileSidebar.classList.contains('translate-x-full')) {
+                closeSidebar();
             }
         }
+    });
 
-        function openSearchOverlay() {
-            searchOverlay.classList.remove('hidden');
-            setTimeout(() => searchOverlay.querySelector('.bg-white').classList.remove('translate-y-[-100%]'), 10);
-            searchInput.focus();
-            document.body.style.overflow = 'hidden';
-            mainContent.classList.add('blur-sm');
-            updateSearchHistory(); // Show history when overlay opens
-        }
+    // Dynamic active link highlighting
+    function setActiveLink() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
 
-        function closeSearchOverlay() {
-            searchOverlay.querySelector('.bg-white').classList.add('translate-y-[-100%]');
-            setTimeout(() => searchOverlay.classList.add('hidden'), 300);
-            document.body.style.overflow = '';
-            mainContent.classList.remove('blur-sm');
-        }
-
-        function openSidebar() {
-            mobileSidebar.classList.remove('translate-x-full');
-            sidebarBackdrop.classList.add('opacity-50');
-            document.body.style.overflow = 'hidden';
-            mainContent.classList.add('blur-sm');
-        }
-
-        function closeSidebar() {
-            mobileSidebar.classList.add('translate-x-full');
-            sidebarBackdrop.classList.remove('opacity-50');
-            document.body.style.overflow = '';
-            mainContent.classList.remove('blur-sm');
-        }
-
-        function performSearch(query) {
-            if (query.trim()) {
-                saveSearchHistory(query); // Save before redirecting
-                window.location.href = `/search?q=${encodeURIComponent(query)}`;
-            }
-        }
-
-        searchButton.addEventListener('click', openSearchOverlay);
-        closeSearchButton.addEventListener('click', closeSearchOverlay);
-        searchOverlay.addEventListener('click', (e) => {
-            if (e.target === searchOverlay) closeSearchOverlay();
-        });
-
-        // Submit search on Enter key or submit button
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                performSearch(searchInput.value);
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === currentPath || (currentPath.startsWith(href) && href !== '/')) {
+                link.classList.add('text-primary', 'font-semibold');
+                link.classList.remove('text-gray-700');
+            } else {
+                link.classList.remove('text-primary', 'font-semibold');
+                link.classList.add('text-gray-700');
             }
         });
+    }
 
-        submitSearchButton.addEventListener('click', () => {
-            performSearch(searchInput.value);
-        });
+    // Run on page load
+    setActiveLink();
 
-        mobileMenuButton.addEventListener('click', openSidebar);
-        closeSidebarButton.addEventListener('click', closeSidebar);
-        sidebarBackdrop.addEventListener('click', closeSidebar);
-
-        // Close sidebar on navigation
-        const sidebarLinks = mobileSidebar.querySelectorAll('a');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', closeSidebar);
-        });
-
-        // Handle escape key for both search and sidebar
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (!searchOverlay.classList.contains('hidden')) {
-                    closeSearchOverlay();
-                } else if (!mobileSidebar.classList.contains('translate-x-full')) {
-                    closeSidebar();
-                }
-            }
+    // Update active link on navigation (e.g., after search or page reload)
+    window.addEventListener('popstate', setActiveLink);
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            setActiveLink();
         });
     });
+});
 </script>
