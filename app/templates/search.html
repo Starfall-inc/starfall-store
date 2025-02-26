@@ -415,26 +415,32 @@
                     window.location.href = `/product/${product.id}`;
                 };
 
-                // Get first image or placeholder
-                const imageUrl = product.images && product.images.length > 0
+                // Get first and second images
+                const defaultImage = product.images && product.images.length > 0
                     ? product.images[0].image_url
                     : 'https://via.placeholder.com/300';
 
+                const hoverImage = product.images && product.images.length > 1
+                    ? product.images[1].image_url
+                    : defaultImage; // Fallback to the same image if only one exists
+
                 productCard.innerHTML = `
-                <div class="relative">
-                    <img src="${imageUrl}" alt="${product.name}" class="w-full aspect-square object-cover">
-                    <div class="absolute top-0 right-0 bg-primary text-white px-2 py-1 text-sm font-semibold">
-                        ${product.avg_rating ? product.avg_rating.toFixed(1) : '0.0'} ★
+                    <div class="relative group">
+                        <img src="${defaultImage}" alt="${product.name}" class="w-full aspect-square object-cover transition-opacity duration-300 group-hover:opacity-0">
+                        <img src="${hoverImage}" alt="${product.name}" class="w-full aspect-square object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <div class="absolute top-0 right-0 bg-primary text-white px-2 py-1 text-sm font-semibold">
+                            ${product.avg_rating ? product.avg_rating.toFixed(1) : '0.0'} ★
+                        </div>
                     </div>
-                </div>
-                <div class="p-3">
-                    <h3 class="text-sm font-medium text-text line-clamp-2">${product.name}</h3>
-                    <p class="text-primary text-lg font-bold mt-1">{{ CURRENCY_SYMBOL }}${formatPrice(product.price)}</p>
-                </div>
-            `;
+                    <div class="p-3">
+                        <h3 class="text-sm font-medium text-text line-clamp-2">${product.name}</h3>
+                        <p class="text-primary text-lg font-bold mt-1">{{ CURRENCY_SYMBOL }}${formatPrice(product.price)}</p>
+                    </div>
+                `;
 
                 resultsContainer.appendChild(productCard);
             });
+
         }
 
         // Apply filters
