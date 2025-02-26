@@ -198,7 +198,8 @@ class FeaturedProduct(db.Model):
 
 class Cart(db.Model):
     __tablename__ = 'carts'
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique row ID
+    cart_id = db.Column(db.String(20), unique=False)  # Now it's NOT a primary key
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     quantity = db.Column(db.Integer, default=1)
@@ -206,11 +207,12 @@ class Cart(db.Model):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     __table_args__ = (
-        db.UniqueConstraint('user_id', 'product_id', name='unique_cart_item'),
+        db.UniqueConstraint('user_id', 'product_id', name='unique_cart_item'),  # Avoid duplicate items
     )
 
     def __repr__(self):
-        return f'<Cart {self.id}>'
+        return f'<Cart {self.cart_id}>'
+
 
 
 class ProductReview(db.Model):

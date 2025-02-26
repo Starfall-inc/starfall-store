@@ -75,3 +75,8 @@ def render_signup_page():
 def search():
     search_term = request.args.get("q")
     return render_template('search.html', query=search_term)
+
+
+@staticroute_bp.route('/cart', methods=['GET'])
+def render_cart_page():
+    return render_template('cart.html')
