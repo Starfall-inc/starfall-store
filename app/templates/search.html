@@ -10,6 +10,12 @@
     #price-tooltip {
         opacity: 0;
         transition: opacity 0.2s;
+        position: absolute;
+        top: -25px;
+        transform: translateX(-50%);
+        padding: 4px 8px;
+        border-radius: 4px;
+        pointer-events: none;
     }
 
     /* Custom slider thumb for better appearance */
@@ -54,6 +60,19 @@
         </svg>
     </button>
 
+    <!-- Category Info Section (Only visible when category is available) -->
+    <div id="category-info" class="hidden mb-6 bg-white rounded-lg shadow-md p-4">
+        <div class="flex items-center space-x-4">
+            <div id="category-icon" class="text-3xl text-primary w-12 h-12 flex items-center justify-center">
+                <!-- Icon will be inserted here -->
+            </div>
+            <div>
+                <h1 id="category-name" class="text-2xl font-bold text-text"></h1>
+                <p id="category-description" class="text-gray-600 mt-1"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Skeleton Loader -->
     <div id="skeleton" class="animate-pulse">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -88,7 +107,7 @@
                 <!-- Collapsible Filter Sections -->
                 <!-- Price Filter (Slider) with Fixed Tooltip -->
                 <div class="filter-section mb-4">
-                    <button class="flex justify-between items-center w-full py-2 text-left font-medium">
+                    <button class="flex justify-between items-center w-full py-2 text-left font-medium filter-toggle-btn">
                         <span>Price Range</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -96,10 +115,9 @@
                     </button>
                     <div class="filter-content space-y-2 overflow-hidden transition-all duration-300">
                         <div class="relative pt-5 pb-2">
-                            <input type="range" id="price-slider" min="0" max="1000" step="1" value="0"
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                                   oninput="updatePriceTooltip(this)">
-                            <div id="price-tooltip" class="absolute top-0 transform -translate-x-1/2 bg-primary text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 pointer-events-none">
+                            <input type="range" id="price-slider" min="0" max="1000" step="1" value="1000"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                            <div id="price-tooltip" class="absolute bg-primary text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 pointer-events-none">
                                 $0.00
                             </div>
                         </div>
@@ -112,7 +130,7 @@
 
                 <!-- Rating Filter with Fixed Collapsing -->
                 <div class="filter-section mb-4">
-                    <button class="flex justify-between items-center w-full py-2 text-left font-medium">
+                    <button class="flex justify-between items-center w-full py-2 text-left font-medium filter-toggle-btn">
                         <span>Rating</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -137,7 +155,7 @@
 
             <!-- Search Results -->
             <div class="col-span-1 md:col-span-3 space-y-4">
-                <h2 class="text-xl md:text-2xl font-bold text-text">Search Results for "{{ query }}"</h2>
+                <h2 id="search-title" class="text-xl md:text-2xl font-bold text-text">Search Results</h2>
                 <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
 
                 <!-- Empty Results State -->
@@ -169,173 +187,141 @@
 <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
 
 <script>
-    // Function to format price with commas
-    function formatPrice(value) {
-        if (!value || value == 0) {
-            return "0.00";
-        }
-        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// Function to format price with commas
+function formatPrice(value) {
+    if (!value || value == 0) {
+        return "0.00";
+    }
+    return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const skeleton = document.getElementById('skeleton');
+    const searchContent = document.getElementById('search-content');
+    const resultsContainer = document.getElementById('results-container');
+    const attributeFilters = document.getElementById('attribute-filters');
+    const priceSlider = document.getElementById('price-slider');
+    const priceTooltip = document.getElementById('price-tooltip');
+    const minPriceElement = document.getElementById('min-price');
+    const maxPriceElement = document.getElementById('max-price');
+    const emptyResults = document.getElementById('empty-results');
+    const filterToggle = document.getElementById('filter-toggle');
+    const filtersSidebar = document.getElementById('filters-sidebar');
+    const closeFilters = document.getElementById('close-filters');
+    const resetFilters = document.getElementById('reset-filters');
+    const categoryInfo = document.getElementById('category-info');
+    const categoryName = document.getElementById('category-name');
+    const categoryIcon = document.getElementById('category-icon');
+    const categoryDescription = document.getElementById('category-description');
+    const searchTitle = document.getElementById('search-title');
+
+    const query = "{{ query if query else '' }}"; // Ensure it's not "None"
+    const categoryId = "{{ category_id if category_id else '' }}"; // Ensure it's not "None"
+
+    // Store all products
+    let allProducts = [];
+    let minPrice = 0;
+    let maxPrice = 1000; // Default, will update dynamically
+
+    // Build API request dynamically
+    let apiUrl = "/api/product/search?";
+    if (query) apiUrl += `query=${encodeURIComponent(query)}`;
+    if (categoryId) apiUrl += `${query ? '&' : ''}category=${encodeURIComponent(categoryId)}`;
+
+    console.log("API Request URL:", apiUrl); // Debugging
+
+    // Mobile filter toggle
+    filterToggle.addEventListener('click', function() {
+        filtersSidebar.classList.remove('hidden');
+        filtersSidebar.classList.add('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+    });
+
+    closeFilters.addEventListener('click', function() {
+        filtersSidebar.classList.add('hidden');
+        filtersSidebar.classList.remove('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
+    });
+
+    // Reset filters
+    resetFilters.addEventListener('click', function() {
+        priceSlider.value = maxPrice;
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+        applyFilters();
+    });
+
+    // Function to update price tooltip position and value
+    function updatePriceTooltip(slider) {
+        const value = parseFloat(slider.value);
+        priceTooltip.textContent = `{{ CURRENCY_SYMBOL }}${formatPrice(value)}`;
+
+        // Make tooltip visible
+        priceTooltip.style.opacity = '1';
+
+        // Calculate position based on slider value percentage
+        const percent = ((value - slider.min) / (slider.max - slider.min)) * 100;
+        priceTooltip.style.left = `calc(${percent}% + (${8 - percent * 0.15}px))`;
     }
 
-    // Function to handle filter sections toggle
-    function setupFilterSections() {
-        document.querySelectorAll('.filter-section button').forEach(button => {
-            button.addEventListener('click', function() {
-                const content = this.nextElementSibling;
-                const chevron = this.querySelector('.filter-chevron');
+    // Show tooltip when hovering or interacting with slider
+    priceSlider.addEventListener('mouseover', function() {
+        updatePriceTooltip(this);
+    });
 
-                // Toggle content visibility
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                    chevron.style.transform = 'rotate(0deg)';
-                } else {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    chevron.style.transform = 'rotate(-180deg)';
-                }
-            });
+    priceSlider.addEventListener('mouseout', function() {
+        priceTooltip.style.opacity = '0';
+    });
 
-            // Open filters by default
-            button.click();
-        });
-    }
+    // Keep tooltip visible during interaction
+    priceSlider.addEventListener('input', function() {
+        updatePriceTooltip(this);
+    });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const skeleton = document.getElementById('skeleton');
-        const searchContent = document.getElementById('search-content');
-        const resultsContainer = document.getElementById('results-container');
-        const attributeFilters = document.getElementById('attribute-filters');
-        const priceSlider = document.getElementById('price-slider');
-        const priceTooltip = document.getElementById('price-tooltip');
-        const minPriceElement = document.getElementById('min-price');
-        const maxPriceElement = document.getElementById('max-price');
-        const emptyResults = document.getElementById('empty-results');
-        const filterToggle = document.getElementById('filter-toggle');
-        const filtersSidebar = document.getElementById('filters-sidebar');
-        const closeFilters = document.getElementById('close-filters');
-        const resetFilters = document.getElementById('reset-filters');
-        const query = "{{ query }}"; // Placeholder for the query from Flask
+    // Fetch search results and set up filters
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(responseData => {
+            // Store all products for filtering
+            allProducts = responseData.products || [];
 
-        let data = []; // Store all products
-        let minPrice = 0;
-        let maxPrice = 1000; // Default, will update dynamically
+            // Debug product attributes
+            console.log("Products loaded:", allProducts.length);
+            console.log("First product attributes:", allProducts.length > 0 ? allProducts[0].attributes : "None");
 
-        // Mobile filter toggle
-        filterToggle.addEventListener('click', function() {
-            filtersSidebar.classList.remove('hidden');
-            filtersSidebar.classList.add('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
-        });
+            // Handle category info if present
+            if (responseData.category) {
+                const category = responseData.category;
+                categoryInfo.classList.remove('hidden');
 
-        closeFilters.addEventListener('click', function() {
-            filtersSidebar.classList.add('hidden');
-            filtersSidebar.classList.remove('fixed', 'inset-0', 'z-50', 'overflow-y-auto');
-        });
+                // Set category name
+                categoryName.textContent = category.name || '';
 
-        // Reset filters
-        resetFilters.addEventListener('click', function() {
-            priceSlider.value = priceSlider.min;
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-            applyFilters();
-        });
+                // Set category description
+                categoryDescription.textContent = category.description || '';
 
-        // Price tooltip function - FIXED
-        function updatePriceTooltip(slider) {
-            const value = parseFloat(slider.value);
-            priceTooltip.textContent = `{{ CURRENCY_SYMBOL }}${formatPrice(value)}`;
-            priceTooltip.classList.add('opacity-100'); // Make sure tooltip is visible
-            priceTooltip.classList.remove('opacity-0');
-
-            // Calculate position based on slider value percentage
-            const percent = ((value - slider.min) / (slider.max - slider.min)) * 100;
-            const thumbPosition = `calc(${percent}% - ${percent * 0.2}px)`;
-            priceTooltip.style.left = thumbPosition;
-        }
-
-        // Show tooltip when hovering or interacting with slider
-        priceSlider.addEventListener('mouseover', () => {
-            updatePriceTooltip(priceSlider);
-        });
-
-        priceSlider.addEventListener('mouseout', () => {
-            priceTooltip.classList.add('opacity-0');
-        });
-
-        // Keep tooltip visible during interaction
-        priceSlider.addEventListener('input', () => {
-            updatePriceTooltip(priceSlider);
-        });
-
-        // Fetch search results and set up filters
-        fetch(`/api/product/search?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(responseData => {
-                data = responseData;
-
-                // Set min and max price dynamically
-                const prices = data.map(product => product.price);
-                if (prices.length > 0) {
-                    minPrice = Math.min(...prices);
-                    maxPrice = Math.max(...prices);
-                    priceSlider.min = minPrice;
-                    priceSlider.max = maxPrice;
-                    priceSlider.value = maxPrice; // Start with showing all products
-                    minPriceElement.textContent = formatPrice(minPrice);
-                    maxPriceElement.textContent = formatPrice(maxPrice);
-                }
-
-                // Collect unique attributes for filters
-                const attributes = {};
-                data.forEach(product => {
-                    if (product.attributes) {
-                        Object.entries(product.attributes).forEach(([key, value]) => {
-                            if (!attributes[key]) attributes[key] = new Set();
-                            attributes[key].add(value);
-                        });
+                // Set category icon (could be FontAwesome or image URL)
+                if (category.category_image) {
+                    if (category.category_image.startsWith('fa-')) {
+                        // It's a FontAwesome icon
+                        categoryIcon.innerHTML = `<i class="${category.category_image}"></i>`;
+                    } else {
+                        // It's an image URL
+                        categoryIcon.innerHTML = `<img src="${category.category_image}" alt="${category.name}" class="w-12 h-12 object-contain">`;
                     }
-                });
+                }
 
-                // Generate attribute filters - FIXED to prevent duplicates
-                const processedAttributes = new Set(); // Track processed attributes to avoid duplicates
+                // Update search title to show category name
+                searchTitle.textContent = `${category.name} Products`;
+                if (query) {
+                    searchTitle.textContent = `Search Results for "${query}" in ${category.name}`;
+                }
+            } else if (query) {
+                searchTitle.textContent = `Search Results for "${query}"`;
+            }
 
-                Object.entries(attributes).forEach(([attribute, values]) => {
-                    // Skip if this attribute has already been processed
-                    if (processedAttributes.has(attribute.toLowerCase())) return;
-
-                    // Add to processed set
-                    processedAttributes.add(attribute.toLowerCase());
-
-                    const filterSection = document.createElement('div');
-                    filterSection.className = 'filter-section mb-4';
-
-                    const button = document.createElement('button');
-                    button.className = 'flex justify-between items-center w-full py-2 text-left font-medium filter-toggle-btn';
-                    button.innerHTML = `
-                    <span class="capitalize">${attribute}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                `;
-
-                    const content = document.createElement('div');
-                    content.className = 'filter-content space-y-2 overflow-hidden transition-all duration-300 max-h-0';
-
-                    Array.from(values).forEach(value => {
-                        content.innerHTML += `
-                        <label class="flex items-center space-x-2">
-                            <input type="checkbox" name="${attribute}" value="${value}" class="accent-primary">
-                            <span class="text-text">${value}</span>
-                        </label>
-                    `;
-                    });
-
-                    filterSection.appendChild(button);
-                    filterSection.appendChild(content);
-                    attributeFilters.appendChild(filterSection);
-                });
-
-                // Display search results
-                renderProducts(data);
+            if (!allProducts.length) {
+                console.warn("No products found.");
+                emptyResults.classList.remove('hidden');
 
                 // Hide skeleton and show content with animation
                 skeleton.classList.add('hidden');
@@ -344,157 +330,248 @@
                     searchContent.classList.remove('opacity-0');
                 }, 50);
 
-                // Setup collapsible filters - FIXED
-                setupFilterToggle();
-            })
-            .catch(error => {
-                console.error('Error fetching search results:', error);
-            });
-
-        // FIXED filter toggle functionality
-        function setupFilterToggle() {
-            document.querySelectorAll('.filter-toggle-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const content = this.nextElementSibling;
-                    const chevron = this.querySelector('.filter-chevron');
-
-                    // Toggle content visibility
-                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-                        // Close the filter
-                        content.style.maxHeight = '0px';
-                        chevron.style.transform = 'rotate(0deg)';
-                    } else {
-                        // Open the filter
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                        chevron.style.transform = 'rotate(180deg)';
-                    }
-                });
-
-                // Open filters by default
-                button.click();
-            });
-
-            // Also set up the built-in filter sections
-            document.querySelectorAll('.filter-section > button:not(.filter-toggle-btn)').forEach(button => {
-                const content = button.nextElementSibling;
-                const chevron = button.querySelector('.filter-chevron');
-
-                button.addEventListener('click', function() {
-                    // Toggle content visibility
-                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-                        // Close the filter
-                        content.style.maxHeight = '0px';
-                        chevron.style.transform = 'rotate(0deg)';
-                    } else {
-                        // Open the filter
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                        chevron.style.transform = 'rotate(180deg)';
-                    }
-                });
-
-                // Open filters by default
-                content.style.maxHeight = content.scrollHeight + 'px';
-                chevron.style.transform = 'rotate(180deg)';
-            });
-        }
-
-        function renderProducts(products) {
-            resultsContainer.innerHTML = '';
-
-            if (products.length === 0) {
-                emptyResults.classList.remove('hidden');
-            } else {
-                emptyResults.classList.add('hidden');
+                return;
             }
 
-            products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer';
-                productCard.setAttribute('data-product-id', product.id);
-                productCard.onclick = function() {
-                    window.location.href = `/product/${product.id}`;
-                };
+            // Set min and max price dynamically
+            const prices = allProducts.map(product => product.price);
+            if (prices.length > 0) {
+                minPrice = Math.min(...prices);
+                maxPrice = Math.max(...prices);
 
-                // Get first and second images
-                const defaultImage = product.images && product.images.length > 0
-                    ? product.images[0].image_url
-                    : 'https://via.placeholder.com/300';
+                priceSlider.min = minPrice;
+                priceSlider.max = maxPrice;
+                priceSlider.value = maxPrice; // Start with showing all products
 
-                const hoverImage = product.images && product.images.length > 1
-                    ? product.images[1].image_url
-                    : defaultImage; // Fallback to the same image if only one exists
+                minPriceElement.textContent = formatPrice(minPrice);
+                maxPriceElement.textContent = formatPrice(maxPrice);
+            }
 
-                productCard.innerHTML = `
-                    <div class="relative group">
-                        <img src="${defaultImage}" alt="${product.name}" class="w-full aspect-square object-cover transition-opacity duration-300 group-hover:opacity-0">
-                        <img src="${hoverImage}" alt="${product.name}" class="w-full aspect-square object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <div class="absolute top-0 right-0 bg-primary text-white px-2 py-1 text-sm font-semibold">
-                            ${product.avg_rating ? product.avg_rating.toFixed(1) : '0.0'} ★
-                        </div>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="text-sm font-medium text-text line-clamp-2">${product.name}</h3>
-                        <p class="text-primary text-lg font-bold mt-1">{{ CURRENCY_SYMBOL }}${formatPrice(product.price)}</p>
-                    </div>
-                `;
-
-                resultsContainer.appendChild(productCard);
-            });
-
-        }
-
-        // Apply filters
-        function applyFilters() {
-            const selectedPrice = parseFloat(priceSlider.value);
-            const ratingChecks = document.querySelectorAll('input[name="rating"]:checked');
-            const ratings = Array.from(ratingChecks).map(cb => parseInt(cb.value));
-
-            // Get all attribute filters
-            const attributeFilters = {};
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                if (cb.name !== 'rating') {
-                    if (!attributeFilters[cb.name]) attributeFilters[cb.name] = [];
-                    attributeFilters[cb.name].push(cb.value);
+            // Collect unique attributes for filters
+            const attributes = {};
+            allProducts.forEach(product => {
+                if (product.attributes) {
+                    Object.entries(product.attributes).forEach(([key, value]) => {
+                        const normalizedKey = key.toLowerCase();
+                        if (!attributes[normalizedKey]) {
+                            attributes[normalizedKey] = new Set();
+                        }
+                        attributes[normalizedKey].add(value);
+                    });
                 }
             });
 
-            // Filter the products
-            const filtered = data.filter(product => {
-                // Price filter - show products up to the selected price
-                const priceMatch = product.price <= selectedPrice;
+            // Log collected attributes for debugging
+            console.log("Collected attributes:", Object.fromEntries(
+                Object.entries(attributes).map(([k, v]) => [k, Array.from(v)])
+            ));
 
-                // Rating filter
-                const ratingMatch = ratings.length === 0 ||
-                    ratings.some(r => Math.round(product.avg_rating || 0) >= r);
+            // Generate attribute filters
+            const processedAttributes = new Set(); // Track processed attributes to avoid duplicates
+            Object.entries(attributes).forEach(([attribute, values]) => {
+                if (processedAttributes.has(attribute.toLowerCase())) return;
+                processedAttributes.add(attribute.toLowerCase());
 
-                // Attribute filters
-                const attributeMatch = Object.entries(attributeFilters).every(([key, values]) => {
-                    // If no values selected for this attribute, all products match
-                    if (values.length === 0) return true;
+                const filterSection = document.createElement('div');
+                filterSection.className = 'filter-section mb-4';
 
-                    // If product doesn't have this attribute, it doesn't match
-                    if (!product.attributes || !product.attributes[key]) return false;
+                const button = document.createElement('button');
+                button.className = 'flex justify-between items-center w-full py-2 text-left font-medium filter-toggle-btn';
+                button.innerHTML = `
+                    <span class="capitalize">${attribute}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 filter-chevron transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                `;
 
-                    // Check if product's attribute value is in selected values
-                    return values.includes(product.attributes[key]);
+                const content = document.createElement('div');
+                content.className = 'filter-content space-y-2 overflow-hidden transition-all duration-300';
+
+                Array.from(values).forEach(value => {
+                    content.innerHTML += `
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="${attribute}" value="${value}" data-key="${attribute}" class="accent-primary attribute-filter">
+                            <span class="text-text">${value}</span>
+                        </label>
+                    `;
                 });
 
-                return priceMatch && ratingMatch && attributeMatch;
+                filterSection.appendChild(button);
+                filterSection.appendChild(content);
+                attributeFilters.appendChild(filterSection);
             });
 
-            renderProducts(filtered);
+            // Display search results
+            renderProducts(allProducts);
+
+            // Setup filter toggles
+            setupFilterToggles();
+
+            // Hide skeleton and show content with animation
+            skeleton.classList.add('hidden');
+            searchContent.classList.remove('hidden');
+            setTimeout(() => {
+                searchContent.classList.remove('opacity-0');
+            }, 50);
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+
+            // Show error message
+            skeleton.classList.add('hidden');
+            searchContent.classList.remove('hidden');
+            emptyResults.classList.remove('hidden');
+            document.querySelector('#empty-results p').textContent = 'Error loading products. Please try again.';
+
+            setTimeout(() => {
+                searchContent.classList.remove('opacity-0');
+            }, 50);
+        });
+
+    // Setup filter toggle functionality
+    function setupFilterToggles() {
+        document.querySelectorAll('.filter-toggle-btn').forEach(button => {
+            const content = button.nextElementSibling;
+            const chevron = button.querySelector('.filter-chevron');
+
+            button.addEventListener('click', function() {
+                if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                    // Close the filter
+                    content.style.maxHeight = '0px';
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    // Open the filter
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            });
+
+            // Open filters by default
+            content.style.maxHeight = content.scrollHeight + 'px';
+            chevron.style.transform = 'rotate(180deg)';
+        });
+    }
+
+    function renderProducts(products) {
+        resultsContainer.innerHTML = '';
+
+        if (products.length === 0) {
+            emptyResults.classList.remove('hidden');
+        } else {
+            emptyResults.classList.add('hidden');
         }
 
-        // Apply filters when any filter changes
-        priceSlider.addEventListener('input', applyFilters);
-        priceSlider.addEventListener('change', applyFilters);
+        products.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer';
+            productCard.setAttribute('data-product-id', product.id);
+            productCard.onclick = function() {
+                window.location.href = `/product/${product.id}`;
+            };
 
-        // Event delegation for dynamically created checkboxes
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.type === 'checkbox') {
-                applyFilters();
-            }
+            // Get first and second images
+            const defaultImage = product.images && product.images.length > 0
+                ? product.images[0].image_url
+                : 'https://via.placeholder.com/300';
+
+            const hoverImage = product.images && product.images.length > 1
+                ? product.images[1].image_url
+                : defaultImage; // Fallback to the same image if only one exists
+
+            productCard.innerHTML = `
+                <div class="relative group">
+                    <img src="${defaultImage}" alt="${product.name}" class="w-full aspect-square object-cover transition-opacity duration-300 group-hover:opacity-0">
+                    <img src="${hoverImage}" alt="${product.name}" class="w-full aspect-square object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div class="absolute top-0 right-0 bg-primary text-white px-2 py-1 text-sm font-semibold">
+                        ${product.avg_rating ? product.avg_rating.toFixed(1) : '0.0'} ★
+                    </div>
+                </div>
+                <div class="p-3">
+                    <h3 class="text-sm font-medium text-text line-clamp-2">${product.name}</h3>
+                    <p class="text-primary text-lg font-bold mt-1">{{ CURRENCY_SYMBOL }}${formatPrice(product.price)}</p>
+                </div>
+            `;
+
+            resultsContainer.appendChild(productCard);
         });
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const selectedPrice = parseFloat(priceSlider.value);
+        const ratingChecks = document.querySelectorAll('input[name="rating"]:checked');
+        const ratings = Array.from(ratingChecks).map(cb => parseInt(cb.value));
+
+        // Get all attribute filters
+        const attributeFilters = {};
+        document.querySelectorAll('input.attribute-filter:checked').forEach(cb => {
+            const key = cb.dataset.key;
+            if (!attributeFilters[key]) attributeFilters[key] = [];
+            attributeFilters[key].push(cb.value);
+        });
+
+        // Log applied filters for debugging
+        console.log("Applying filters:", {
+            priceMax: selectedPrice,
+            ratings: ratings,
+            attributes: attributeFilters
+        });
+
+        // Filter the products
+        const filtered = allProducts.filter(product => {
+            // Price filter - show products up to the selected price
+            const priceMatch = product.price <= selectedPrice;
+
+            // Rating filter
+            const ratingMatch = ratings.length === 0 ||
+                ratings.some(r => Math.round(product.avg_rating || 0) >= r);
+
+            // Attribute filters
+            const attributeMatch = Object.entries(attributeFilters).every(([key, values]) => {
+                // If no values selected for this attribute, all products match
+                if (values.length === 0) return true;
+
+                // If product doesn't have this attribute, it doesn't match
+                if (!product.attributes) return false;
+
+                // Find the actual key in the product's attributes (case-insensitive match)
+                const actualKey = Object.keys(product.attributes).find(
+                    k => k.toLowerCase() === key.toLowerCase()
+                );
+
+                if (!actualKey) return false;
+
+                // Check if product's attribute value is in selected values (case-insensitive)
+                const productValue = product.attributes[actualKey];
+                return values.some(v => v === productValue);
+            });
+
+            // Debug matching for problematic products
+            if (!attributeMatch && product.name.includes("Samsung")) {
+                console.log("Samsung product failed attribute match:", {
+                    product: product.name,
+                    attributes: product.attributes,
+                    filters: attributeFilters
+                });
+            }
+
+            return priceMatch && ratingMatch && attributeMatch;
+        });
+
+        console.log(`Filtered from ${allProducts.length} to ${filtered.length} products`);
+        renderProducts(filtered);
+    }
+
+    // Apply filters when any filter changes
+    priceSlider.addEventListener('input', applyFilters);
+    priceSlider.addEventListener('change', applyFilters);
+
+    // Event delegation for dynamically created checkboxes
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.type === 'checkbox') {
+            applyFilters();
+        }
     });
+});
 </script>
 {% endblock %}

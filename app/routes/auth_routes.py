@@ -52,3 +52,10 @@ def login():
     response.set_cookie("session_id", session_id, httponly=True, secure=True)
 
     return response
+
+@auth_bp.route("/check-session")
+def check_session():
+    session_id = request.cookies.get("session_id")
+    if session_id and SessionManager.get_session(session_id):
+        return jsonify({"logged_in": True})
+    return jsonify({"logged_in": False})

@@ -73,8 +73,13 @@ def render_signup_page():
 
 @staticroute_bp.route('/search', methods=['GET'])
 def search():
-    search_term = request.args.get("q")
-    return render_template('search.html', query=search_term)
+    search_term = request.args.get("q", "").strip()  # Default to empty string
+    category_id = request.args.get("category", "").strip()  # Default to empty string
+
+    print(f"Search Query: {search_term}, Category ID: {category_id}")  # Debugging
+
+    return render_template('search.html', query=search_term, category_id=category_id)
+
 
 
 @staticroute_bp.route('/cart', methods=['GET'])

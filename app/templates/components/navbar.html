@@ -21,9 +21,10 @@
                 <a href="/cart" class="text-gray-700 hover:text-primary">
                     <i class="fas fa-shopping-cart text-xl"></i>
                 </a>
-                <a href="{{ url_for('siteroute.render_login_page') }}" class="text-gray-700 hover:text-primary">
+                <a id="account-icon" class="text-gray-700 hover:text-primary group">
                     <i class="fas fa-user-circle text-xl"></i>
                 </a>
+
                 <!-- Search Button for Both Desktop and Mobile -->
                 <button id="search-button" class="text-gray-700 hover:text-primary">
                     <i class="fas fa-search text-xl"></i>
@@ -78,6 +79,51 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        let accountIcon = document.getElementById("account-icon");
+
+               if (accountIcon) {
+            try {
+                // Fetch session status from the backend
+                let response = await fetch("/api/auth/check-session", { credentials: "include" });
+                let data = await response.json();
+
+                let tooltipText = data.logged_in ? "Account" : "Login";
+                accountIcon.setAttribute("href", data.logged_in ? "/account" : "{{ url_for('siteroute.render_login_page') }}");
+
+                // Create Tooltip
+                let tooltip = document.createElement("div");
+                tooltip.innerText = tooltipText;
+                tooltip.className = "absolute bg-secondary text-white text-sm font-medium px-3 py-1 rounded-full opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-2 shadow-lg z-10";
+
+                // Tooltip Arrow
+                let tooltipArrow = document.createElement("div");
+                tooltipArrow.className = "absolute w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-secondary left-1/2 transform -translate-x-1/2";
+
+                tooltip.appendChild(tooltipArrow);
+
+                // Position Tooltip Below Icon
+                tooltip.style.top = "120%"; // Adjust distance
+                tooltip.style.left = "50%";
+                tooltip.style.transform = "translateX(-50%)";
+
+                // Position Tooltip Arrow
+                tooltipArrow.style.top = "-6px";
+
+                // Add tooltip to the icon
+                accountIcon.classList.add("relative", "group");
+                accountIcon.appendChild(tooltip);
+
+            } catch (error) {
+                console.error("Error checking session:", error);
+            }
+        }
+    });
+</script>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

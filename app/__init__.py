@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_migrate import Migrate
 
 from app.Seraphina import Seraphina
 from app.config import config
@@ -21,6 +22,9 @@ def create_app():
 
     # Initialize database
     db.init_app(app)
+
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)  # ADD THIS
 
     # Initialize Seraphina
     init_seraphina(app)

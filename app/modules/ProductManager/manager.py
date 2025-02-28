@@ -50,7 +50,24 @@ class ProductManager:
     @staticmethod
     def get_products_by_category(category_id):
         products = Product.query.filter_by(category_id=category_id).all()
-        return [
+
+        # Fetch the category info separately
+        category = ProductCategory.query.filter_by(id=category_id).first()
+
+        # If no category is found, return an empty list
+        if not category:
+            return {"error": "Category not found"}, 404
+
+        # Format category information
+        category_info = {
+            "id": category.id,
+            "name": category.name,
+            "category_image": category.category_image,
+            "description": category.description
+        }
+
+        # Format product information
+        products_list = [
             {
                 "id": product.id,
                 "name": product.name,
@@ -64,6 +81,11 @@ class ProductManager:
             }
             for product in products
         ]
+
+        return {
+            "category": category_info,
+            "products": products_list
+        }
 
     @staticmethod
     def get_featured_products():

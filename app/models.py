@@ -41,7 +41,7 @@ class ProductCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
     category_image = db.Column(db.String(255))
-    description = db.Column(db.String(255))
+    description = db.Column(db.Text)  # Change String(255) → Text
 
     products = db.relationship('Product', backref='category_rel', lazy=True)
 

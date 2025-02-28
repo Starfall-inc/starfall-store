@@ -82,14 +82,31 @@ def get_product_categories():
     return jsonify(categories_dict)
 
 
-# search products by query
+# search products by query or category
+@product_bp.route("/search", methods=["GET"])
 @product_bp.route("/search", methods=["GET"])
 def search_products():
-    query = request.args.get("query")
-    seraphina.info(f"Searching for products with query: {query}")
+    query = request.args.get("query", "").strip()
+    category_id = request.args.get("category", "").strip()
+
+    if not query and not category_id:
+        return jsonify({"error": "At least one parameter (query or category) is required"}), 400
+
+    seraphina.info(f"Searching for products: query='{query}', category='{category_id}'")
+
+    if category_id:
+        category_data = ProductManager.get_products_by_category(category_id)
+        return jsonify(category_data)
+
+    # Search products normally if no category is provided
     products = ProductManager.search_products(query)
     products_dict = [product for product in products]
-    return jsonify(products_dict)
+
+    return jsonify({
+        "products": products_dict
+    })
+
+
 
 
 # get product under specific category by category_id
