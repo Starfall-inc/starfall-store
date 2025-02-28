@@ -10,7 +10,6 @@ redis_clients = {}
 cache = None
 
 
-
 def init_seraphina(app):
     global seraphina
     seraphina = Seraphina(
@@ -33,6 +32,7 @@ def init_redis(app):
 
     total_database = len(redis_clients)
     seraphina.info(f"Redis connection established for {total_database} databases.")
+
 
 def init_cache(app):
     global cache

@@ -1,5 +1,6 @@
 {
   "shop": {
+    "shop_domain": "https://sakuramart-dev.sangonomiya.icu",
     "name": "SakuraMart",
     "email": "support@sakuramart.jp",
     "phone": "098-765-4321",
@@ -12,11 +13,16 @@
     "logo": "sakura-logo.png",
     "favicon": "sakura-favicon.ico",
     "theme": {
-      "primary": "#A8E3A0",
-      "secondary": "#6BCB77",
+      "primary": "#FFB7C5",
+      "secondary": "#FF69B4",
       "text": "#4A4A4A",
-      "background": "#F0F8E2",
-      "dark": "#3B755F"
+      "background": "#FFF0F5",
+      "dark": "#8B0000"
+    },
+    "payment": {
+      "provider": "juspay",
+      "sandbox_url": "https://sandbox.juspay.in/",
+      "production_url": "https://api.juspay.in/"
     }
   }
 }

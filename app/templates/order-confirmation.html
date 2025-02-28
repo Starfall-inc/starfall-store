@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .sakura-loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #f478a7;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<body class="bg-background text-text">
+<div class="container mx-auto px-4 py-12 flex flex-col items-center">
+    <!-- Loader -->
+    <div id="loading" class="flex flex-col items-center">
+        <span class="sakura-loader"></span>
+        <p class="mt-4 text-gray-600">Fetching your order details...</p>
+    </div>
+
+    <!-- Order Confirmation -->
+    <div id="order-status" class="hidden max-w-lg bg-white p-6 rounded-lg shadow-lg text-center animate-fade-in">
+        <div id="status-icon" class="text-5xl mb-4"></div>
+        <h2 id="status-message" class="text-2xl font-bold"></h2>
+        <p id="order-details" class="text-gray-600 mt-2"></p>
+        <a href="/" class="mt-6 inline-block bg-primary text-white px-6 py-3 rounded-md shadow-md hover:bg-secondary transition-colors">
+            Back to Home
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const orderId = "{{ order_id }}";
+        const loadingDiv = document.getElementById("loading");
+        const statusDiv = document.getElementById("order-status");
+        const statusIcon = document.getElementById("status-icon");
+        const statusMessage = document.getElementById("status-message");
+        const orderDetails = document.getElementById("order-details");
+
+        fetch(`/api/order/${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.classList.add("hidden");
+
+                if (data.success) {
+                    const order = data.order;
+                    let statusText = "";
+                    let iconHtml = "";
+
+                    if (order.status === "Paid") {
+                        statusText = "Payment Successful!";
+                        iconHtml = `<i class="fas fa-check-circle text-green-500"></i>`;
+                    } else if (order.status === "Payment Failed") {
+                        statusText = "Payment Failed!";
+                        iconHtml = `<i class="fas fa-times-circle text-red-500"></i>`;
+                    } else {
+                        statusText = "Order Pending...";
+                        iconHtml = `<i class="fas fa-clock text-yellow-500"></i>`;
+                    }
+
+                    statusIcon.innerHTML = iconHtml;
+                    statusMessage.innerText = statusText;
+                    orderDetails.innerText = `Order ID: ${order.order_id} | Total: {{ CURRENCY_SYMBOL }} ${order.total}`;
+
+                    statusDiv.classList.remove("hidden");
+                } else {
+                    statusMessage.innerText = "Order Not Found!";
+                    statusIcon.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500"></i>`;
+                    orderDetails.innerText = "Please contact support if you believe this is an error.";
+                    statusDiv.classList.remove("hidden");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching order:", error);
+                loadingDiv.classList.add("hidden");
+                statusDiv.classList.remove("hidden");
+                statusMessage.innerText = "Something went wrong!";
+                statusIcon.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500"></i>`;
+                orderDetails.innerText = "Please try again later.";
+            });
+    });
+</script>
+</body>
+{% endblock %}

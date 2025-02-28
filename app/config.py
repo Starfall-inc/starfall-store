@@ -48,6 +48,19 @@ class Config:
     CACHE_TYPE = 'simple'
     CACHE_DEFAULT_TIMEOUT = 300
 
+    # Juspay config :
+    # Load Juspay Credentials from Environment Variables
+    JUSPAY_MERCHANT_ID = os.getenv("JUSPAY_MERCHANT_ID")
+    JUSPAY_API_KEY = os.getenv("JUSPAY_API_KEY")
+    JUSPAY_SECRET_KEY = os.getenv("JUSPAY_SECRET_KEY")
+
+    # Juspay API Endpoints
+    JUSPAY_ENV = os.getenv("JUSPAY_ENV", "sandbox")  # Default to sandbox
+    JUSPAY_BASE_URL = config_data["shop"]["payment"]["sandbox_url"] if JUSPAY_ENV == "sandbox" else config_data["payment"]["production_url"]
+    JUSPAY_CALLBACK_PATH = os.getenv("JUSPAY_CALLBACK_PATH", "/api/payment/callback")
+    JUSPAY_RETURN_URL = f"{config_data["shop"]["shop_domain"]}{JUSPAY_CALLBACK_PATH}"
+
+
 
 class ProductionConfig(Config):
     """Production-specific configuration"""

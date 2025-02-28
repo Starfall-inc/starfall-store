@@ -82,7 +82,6 @@ class Product(db.Model):
             return 0
         return round(sum(review.rating for review in self.reviews) / len(self.reviews), 2)  # Rounds to 2 decimal places
 
-
     def __repr__(self):
         return f'<Product {self.name}>'
 
@@ -130,7 +129,7 @@ class PaymentMethod(db.Model):
     details = db.Column(db.Text)
     is_active = db.Column(db.Boolean, default=False)
 
-    orders = db.relationship('Order', backref='payment_method', lazy=True)
+    # orders = db.relationship('Order', backref='payment_method', lazy=True)
 
     def __repr__(self):
         return f'<PaymentMethod {self.method_name}>'
@@ -140,7 +139,7 @@ class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    payment_method_id = db.Column(db.Integer, db.ForeignKey('payment_methods.id'))
+    payment_method = db.Column(db.String(50), nullable=True)  # Changed from ForeignKey to String
     order_place_date = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     expected_delivery_date = db.Column(db.TIMESTAMP)
     actual_delivery_date = db.Column(db.TIMESTAMP)
@@ -214,7 +213,6 @@ class Cart(db.Model):
         return f'<Cart {self.cart_id}>'
 
 
-
 class ProductReview(db.Model):
     __tablename__ = 'product_reviews'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -286,3 +284,22 @@ class Banner(db.Model):
             "link": self.link,
             "active": self.active,
         }
+
+
+class PaymentTransaction(db.Model):
+    __tablename__ = "payment_transactions"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id", ondelete="CASCADE"), nullable=False)
+    transaction_id = db.Column(db.String(100), unique=True, nullable=False)  # Juspay Transaction ID
+    payment_status = db.Column(db.String(50), default="PENDING")  # PENDING, CHARGED, FAILED
+    payment_method = db.Column(db.String(50))  # UPI, CARD, NET_BANKING, etc.
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.utcnow)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship with Order
+    order = db.relationship("Order", backref="payment_transactions", lazy=True)
+
+    def __repr__(self):
+        return f"<PaymentTransaction {self.transaction_id} - {self.payment_status}>"

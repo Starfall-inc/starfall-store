@@ -1,0 +1,339 @@
+{# templates/index.html #}
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        .stagger-delay-1 { animation-delay: 0.1s; }
+        .stagger-delay-2 { animation-delay: 0.2s; }
+        .stagger-delay-3 { animation-delay: 0.3s; }
+        .stagger-delay-4 { animation-delay: 0.4s; }
+
+        .sakura-loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #f478a7;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+<body class="bg-background text-text">
+
+<!-- Checkout Steps -->
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-center mb-8 opacity-0 animate-fade-in">
+        <div class="flex items-center w-full max-w-3xl">
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <span class="text-sm mt-2">Cart</span>
+            </div>
+            <div class="flex-1 h-1 mx-2 bg-primary"></div>
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
+                    <i class="fas fa-address-card"></i>
+                </div>
+                <span class="text-sm mt-2">Details</span>
+            </div>
+            <div class="flex-1 h-1 mx-2 bg-gray-300"></div>
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-gray-300 text-white flex items-center justify-center">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <span class="text-sm mt-2">Payment</span>
+            </div>
+            <div class="flex-1 h-1 mx-2 bg-gray-300"></div>
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-gray-300 text-white flex items-center justify-center">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span class="text-sm mt-2">Confirmation</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
+        <!-- Left Column - Order Summary -->
+        <div class="w-full lg:w-1/2 opacity-0 animate-fade-in stagger-delay-1">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-6 text-text flex items-center">
+                    <i class="fas fa-shopping-bag mr-2 text-primary"></i>
+                    Order Summary
+                </h2>
+
+                {% if error %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ error }}</span>
+                </div>
+                {% else %}
+
+                <div id="cart-items" class="space-y-4 mb-6 divide-y divide-gray-100">
+                    {% for item in cart %}
+                    <div class="flex py-3 items-center opacity-0 animate-slide-in" style="animation-delay: calc(0.1s * {{ loop.index }});">
+                        <div class="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center mr-4">
+                            {% if item.product_image %}
+                            <img src="{{ item.product_image }}" alt="{{ item.product_name }}" class="max-h-14 max-w-14 object-contain">
+                            {% else %}
+                            <i class="fas fa-box text-gray-400 text-xl"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-medium">{{ item.product_name }}</h4>
+                            <p class="text-sm text-gray-500">Qty: {{ item.quantity }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold">{{ CURRENCY_SYMBOL }} {{ item.product_price * item.quantity }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 space-y-2">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span>{{ CURRENCY_SYMBOL }} {{ total_price - delivery_charges }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Delivery Fee</span>
+                        <span>{{ CURRENCY_SYMBOL }} {{ delivery_charges }}</span>
+                    </div>
+
+                    <div class="flex justify-between font-bold text-lg mt-4">
+                        <span>Total</span>
+                        <span class="text-secondary">{{ CURRENCY_SYMBOL }} {{ total_price }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column - Shipping Details & Payment -->
+        <div class="w-full lg:w-1/2 opacity-0 animate-fade-in stagger-delay-2">
+            {% if not error %}
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-6 text-text flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-primary"></i>
+                    Shipping Details
+                </h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="fullname" name="fullname" value="{{ user_name|default('') }}"
+                               class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
+                               placeholder="Enter your full name">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ user_email|default('') }}"
+                               class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
+                               placeholder="Enter your email address">
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" value="{{ user_phone|default('') }}"
+                               class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
+                               placeholder="Enter your phone number">
+                        <small class="text-gray-500">This may be used to contact you about your order</small>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+                        <textarea id="address" name="address" rows="3"
+                                  class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary"
+                                  placeholder="Enter your complete delivery address">{{ user_address|default('') }}</textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6 opacity-0 animate-fade-in stagger-delay-3">
+                <h2 class="text-2xl font-bold mb-6 text-text flex items-center">
+                    <i class="fas fa-truck mr-2 text-primary"></i>
+                    Delivery Options
+                </h2>
+
+                <div class="space-y-3">
+                    <label class="flex items-center p-4 border border-gray-200 rounded-md cursor-pointer hover:border-primary transition-colors">
+                        <input type="radio" name="delivery-option" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                        <div class="ml-3 flex-1">
+                            <span class="font-medium">Standard Delivery</span>
+                            <p class="text-sm text-gray-500">3-5 business days</p>
+                        </div>
+                        <span class="font-medium">{{ CURRENCY_SYMBOL }} {{ delivery_charges|default('49') }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="opacity-0 animate-fade-in stagger-delay-4">
+                <button id="pay-now-btn" class="w-full py-4 bg-primary text-white font-bold rounded-md shadow-md hover:bg-secondary transition-colors flex items-center justify-center">
+                    <span>Proceed to Payment</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+
+                <p class="text-sm text-center mt-4 text-gray-500">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    Secure payment powered by
+                    <i class="fas fa-bolt text-primary"></i> Juspay
+                </p>
+
+
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Loading Modal -->
+<div id="loading-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <span class="sakura-loader mb-4"></span>
+        <p class="text-lg font-medium">Processing your payment...</p>
+        <p class="text-sm text-gray-500 mt-2">Please do not close this window.</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const payButton = document.getElementById("pay-now-btn");
+        const loadingModal = document.getElementById("loading-modal");
+
+        if (payButton) {
+            payButton.addEventListener("mouseenter", function () {
+                this.classList.add("animate-pulse");
+            });
+
+            payButton.addEventListener("mouseleave", function () {
+                this.classList.remove("animate-pulse");
+            });
+
+            payButton.addEventListener("click", async function () {
+                // Show loading modal
+                loadingModal.classList.remove("hidden");
+
+                // Collect user inputs
+                const shippingAddress = document.getElementById("address").value.trim();
+
+                if (!shippingAddress) {
+                    alert("Please enter your delivery address.");
+                    loadingModal.classList.add("hidden");
+                    return;
+                }
+
+                try {
+                    // **Step 1: Place Order**
+                    const orderResponse = await fetch("/api/order/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ shipping_address: shippingAddress })
+                    });
+
+                    const orderData = await orderResponse.json();
+
+                    if (!orderData.success) {
+                        throw new Error(orderData.error || "Failed to place order.");
+                    }
+
+                    const orderId = orderData.order_id;
+                    console.log(`✅ Order placed successfully! Order ID: ${orderId}`);
+
+                    // **Step 2: Initiate Payment**
+                    const paymentResponse = await fetch(`/api/order/${orderId}/pay`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    const paymentData = await paymentResponse.json();
+
+                    if (!paymentData.success || !paymentData.payment_url) {
+                        throw new Error(paymentData.error || "Failed to initiate payment.");
+                    }
+
+                    console.log("✅ Redirecting to Juspay Payment Page...");
+                    window.location.href = paymentData.payment_url; // Redirect to Juspay
+
+                } catch (error) {
+                    console.error("🚨 Error during checkout:", error);
+                    alert("An error occurred: " + error.message);
+                    loadingModal.classList.add("hidden");
+                }
+            });
+        }
+
+        // Animate form inputs
+        const inputs = document.querySelectorAll("input, textarea");
+        inputs.forEach(input => {
+            input.addEventListener("focus", function () {
+                this.parentElement.classList.add("scale-105");
+                this.parentElement.style.transition = "transform 0.3s ease";
+            });
+
+            input.addEventListener("blur", function () {
+                this.parentElement.classList.remove("scale-105");
+            });
+        });
+
+        // Add scroll animations
+        const animateOnScroll = function () {
+            const elements = document.querySelectorAll(".animate-on-scroll");
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top <= window.innerHeight * 0.8) {
+                    el.classList.add("animate-fade-in");
+                    el.style.opacity = "1";
+                }
+            });
+        };
+
+        // Add animate-on-scroll class to sections that should animate on scroll
+        document.querySelectorAll(".bg-white").forEach(el => {
+            if (!el.classList.contains("animate-fade-in")) {
+                el.classList.add("animate-on-scroll");
+                el.style.opacity = "0";
+            }
+        });
+
+        // Run on load and scroll
+        animateOnScroll();
+        window.addEventListener("scroll", animateOnScroll);
+    });
+</script>
+
+{% endblock %}
