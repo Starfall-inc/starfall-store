@@ -239,10 +239,12 @@
         // Fetch order data with real progress tracking
         fetchWithLoading(`/api/order/${orderId}`)
             .then(data => {
-                if (data.success) {
+                if (data.success && data.order.status === "Paid") {
                     showSuccessState(data.order);
-                } else {
-                    showErrorState("Order Not Found");
+                } else if (data.success && data.order.status === "pending") {
+                    showPendingState(data.order);
+                } else if (data.success && data.order.status === "failed") {
+                    showErrorState("Payment failed. Please try again.");
                 }
             })
             .catch(error => {
@@ -369,6 +371,58 @@
 
         document.getElementById("content-container").innerHTML = successHtml;
     }
+    // Function to show pending payment state
+    function showPendingState(order) {
+        const pendingHtml = `
+        <div class="status-card p-8 animate-fade-in">
+            <div class="pending-accent"></div>
+
+            <div class="pending-icon animate-pulse">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                    <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+
+            <h2 class="text-2xl font-bold text-center mb-4 animate-slide-up" style="animation-delay: 0.1s">
+                Payment Pending...
+            </h2>
+
+            <p class="text-gray-600 text-center mb-6 animate-slide-up" style="animation-delay: 0.2s">
+                Your order is awaiting payment confirmation.
+            </p>
+
+            <table class="order-details-table animate-slide-up" style="animation-delay: 0.3s">
+                <tr>
+                    <td>Order ID:</td>
+                    <td>${order.order_id}</td>
+                </tr>
+                <tr>
+                    <td>Date:</td>
+                    <td>${order.placed_on}</td>
+                </tr>
+                <tr>
+                    <td>Total:</td>
+                    <td>₹ ${order.total.toFixed(2)}</td>
+                </tr>
+            </table>
+
+            <div class="flex justify-center mt-8 animate-slide-up" style="animation-delay: 0.4s">
+                <a href="/" class="btn-secondary">
+                    <span>Go to Home</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    `;
+
+        document.getElementById("content-container").innerHTML = pendingHtml;
+    }
+
+
 
     // Function to show error state
     function showErrorState(errorMessage) {
