@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for
 from app.modules.PaymentManager.manager import PaymentManager
 from app.modules.OrderManager.manager import OrderManager
 from app.modules.SessionManager.manager import SessionManager
@@ -17,7 +17,7 @@ def get_user_id():
 @payment_bp.route("/initiate", methods=["POST"])
 @login_required
 def initiate_payment():
-    """Initiate payment using Juspay with a verified order total from the server."""
+    """Initiate payment using Razorpay with a verified order total from the server."""
     try:
         user_id = get_user_id()
         if not user_id:
@@ -35,9 +35,9 @@ def initiate_payment():
             return jsonify({"success": False, "error": "Order not found or unauthorized"}), 403
 
         # ✅ Get the total price (including delivery charges) from the server
-        total_price = order_data["order"]["total"]
+        total_price = order_data["orders"][0]["total"]
 
-        # ✅ Ensure the user cannot provide their own price
+        # ✅ Initiate Razorpay Payment
         response = PaymentManager.initiate_payment(order_id, total_price)
 
         if response["success"]:
@@ -51,22 +51,17 @@ def initiate_payment():
 
 @payment_bp.route("/callback", methods=["POST"])
 def payment_callback():
-    """Handle Juspay payment callback and update order status securely."""
+    """Handle Razorpay payment callback and update order status securely."""
     try:
         request_data = request.get_json()
-        received_signature = request.headers.get("x-juspay-signature")
 
-        # ✅ Verify Juspay Signature to prevent forged requests
-        if not PaymentManager.verify_juspay_signature(request_data, received_signature):
-            seraphina.warn(f"⚠️ Invalid Juspay signature! Possible attack detected.")
-            return jsonify({"success": False, "error": "Unauthorized request"}), 403
-
+        # Process the payment callback
         response = PaymentManager.process_payment_callback(request_data)
 
         if response["success"]:
-            seraphina.info(f"✅ Payment successful for Order {request_data.get('order_id')}")
+            seraphina.info(f"✅ Payment successful for Razorpay payment {request_data.get('razorpay_payment_id')}")
         else:
-            seraphina.warn(f"❌ Payment failed for Order {request_data.get('order_id')}")
+            seraphina.warn(f"❌ Payment failed for Razorpay payment {request_data.get('razorpay_payment_id')}")
 
         return jsonify(response), (200 if response["success"] else 400)
 

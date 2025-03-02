@@ -24,6 +24,9 @@ def place_order():
     """
     Create an order using cart contents and store user’s shipping address.
 
+    @TODO: Implement dynamic delivery charges based on user location.
+    @TODO: the order should be placed after the payment is done not after the user confirms the order.
+
     🚀 **Frontend Workflow**:
     1️⃣ **User confirms order** → Calls this route.
     2️⃣ **Order is created** → Returns `order_id`.
@@ -81,7 +84,7 @@ def initiate_payment_for_order(order_id):
         # ✅ Get the total price (including delivery charges) from the server
         total_price = order_data["orders"][0]["total"]
 
-        # ✅ Initiate Juspay Payment
+        # ✅ Initiate Razor Payment
         response = PaymentManager.initiate_payment(order_id, total_price)
 
         if response["success"]:

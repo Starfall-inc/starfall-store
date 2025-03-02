@@ -5,8 +5,8 @@
     "email": "support@sakuramart.jp",
     "phone": "098-765-4321",
     "address": "123 Sakura St, Tokyo, Japan, 100-0001",
-    "currency": "JPY",
-    "currency_symbol": "$",
+    "currency": "INR",
+    "currency_symbol": "₹",
     "tax": 0.08,
     "shipping": 500,
     "free_shipping": 5000,
@@ -20,9 +20,9 @@
       "dark": "#8B0000"
     },
     "payment": {
-      "provider": "juspay",
-      "sandbox_url": "https://sandbox.juspay.in/",
-      "production_url": "https://api.juspay.in/"
+      "provider": "razorpay",
+      "sandbox_url": "https://api.razorpay.com/v1/",
+      "production_url": "https://api.razorpay.com/v1/"
     }
   }
 }

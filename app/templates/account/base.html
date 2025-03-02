@@ -1,0 +1,103 @@
+{# templates/account/base.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ SHOP_NAME }} - My Account{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- Sidebar Toggle for Mobile -->
+        <div class="md:hidden w-full flex justify-between items-center p-4 bg-white rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-text">My Account</h2>
+            <button id="sidebarToggle" class="text-text focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="hidden md:block w-full md:w-64 bg-white rounded-lg shadow transition-all duration-300">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-text">{{ user.name if user else 'Guest' }}</p>
+                        <p class="text-sm text-gray-500">{{ user.email if user else 'Not logged in' }}</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ url_for('account.orders') }}" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors {% if active_section == 'orders' %}bg-primary text-white hover:bg-primary{% endif %}">
+                            <i class="fas fa-box-open w-6"></i>
+                            <span>Orders & Returns</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('account.addresses') }}" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors {% if active_section == 'addresses' %}bg-primary text-white hover:bg-primary{% endif %}">
+                            <i class="fas fa-map-marker-alt w-6"></i>
+                            <span>Addresses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('account.security') }}" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors {% if active_section == 'security' %}bg-primary text-white hover:bg-primary{% endif %}">
+                            <i class="fas fa-lock w-6"></i>
+                            <span>Login & Security</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('account.support') }}" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors {% if active_section == 'support' %}bg-primary text-white hover:bg-primary{% endif %}">
+                            <i class="fas fa-headset w-6"></i>
+                            <span>Customer Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-gray-200">
+                <a href="{{ url_for('auth.logout') }}" class="flex items-center p-3 text-red-500 rounded-lg hover:bg-red-50 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-1 bg-white rounded-lg shadow p-6">
+            {% block account_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // Toggle sidebar on mobile
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('hidden');
+
+            // Change icon based on state
+            const icon = sidebarToggle.querySelector('i');
+            if (sidebar.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) { // md breakpoint
+                sidebar.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+        });
+    });
+</script>
+{% endblock %}

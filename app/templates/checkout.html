@@ -235,6 +235,12 @@
         const payButton = document.getElementById("pay-now-btn");
         const loadingModal = document.getElementById("loading-modal");
 
+        // Add Razorpay script to the page
+        const razorpayScript = document.createElement("script");
+        razorpayScript.src = "https://checkout.razorpay.com/v1/checkout.js";
+        razorpayScript.async = true;
+        document.body.appendChild(razorpayScript);
+
         if (payButton) {
             payButton.addEventListener("mouseenter", function () {
                 this.classList.add("animate-pulse");
@@ -274,7 +280,7 @@
                     const orderId = orderData.order_id;
                     console.log(`✅ Order placed successfully! Order ID: ${orderId}`);
 
-                    // **Step 2: Initiate Payment**
+                    // **Step 2: Initiate Payment with Razorpay**
                     const paymentResponse = await fetch(`/api/order/${orderId}/pay`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" }
@@ -282,12 +288,40 @@
 
                     const paymentData = await paymentResponse.json();
 
-                    if (!paymentData.success || !paymentData.payment_url) {
+                    if (!paymentData.success) {
                         throw new Error(paymentData.error || "Failed to initiate payment.");
                     }
 
-                    console.log("✅ Redirecting to Juspay Payment Page...");
-                    window.location.href = paymentData.payment_url; // Redirect to Juspay
+                    // Hide loading indicator when ready to display Razorpay
+                    loadingModal.classList.add("hidden");
+
+                    // Launch Razorpay checkout
+                    const options = {
+                        key: paymentData.key_id,
+                        amount: parseFloat(paymentData.amount) * 100, // Convert to lowest currency unit
+                        currency: paymentData.currency,
+                        name: document.querySelector("meta[name='shop-name']")?.content || "Sakura Mart",
+                        description: `Order #${orderId}`,
+                        order_id: paymentData.razorpay_order_id,
+                        // @TODO: This to variable in flask
+                        image: document.querySelector("meta[name='shop-logo']")?.content || "http://localhost:5001/static/images/mascot.png", // ✅ Add your brand logo here
+
+                        handler: function (response) {
+                            // This handler will be called when payment completes successfully
+                            handlePaymentSuccess(response, orderId);
+                        },
+                        prefill: {
+                            name: document.querySelector("meta[name='user-name']")?.content || "",
+                            email: document.querySelector("meta[name='user-email']")?.content || "",
+                            contact: document.querySelector("meta[name='user-phone']")?.content || ""
+                        },
+                        theme: {
+                            color: document.querySelector("meta[name='theme-color']")?.content || "{{ PRIMARY_COLOR }}"
+                        }
+                    };
+
+                    const razorpayInstance = new Razorpay(options);
+                    razorpayInstance.open();
 
                 } catch (error) {
                     console.error("🚨 Error during checkout:", error);
@@ -334,6 +368,34 @@
         animateOnScroll();
         window.addEventListener("scroll", animateOnScroll);
     });
+
+    // Handle successful payment
+    async function handlePaymentSuccess(response, orderId) {
+        try {
+            // Show loading modal until redirect
+            document.getElementById("loading-modal").classList.remove("hidden");
+
+            // Send payment verification to server
+            await fetch("/api/payment/callback", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            });
+
+            // Redirect to order success page
+            window.location.href = `/order?order_id=${orderId}`;
+        } catch (error) {
+            console.error("Error verifying payment:", error);
+            alert("Payment was processed, but we encountered an error confirming it. Please contact support.");
+            document.getElementById("loading-modal").classList.add("hidden");
+        }
+    }
 </script>
 
 {% endblock %}

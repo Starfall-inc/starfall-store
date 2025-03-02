@@ -1,0 +1,158 @@
+{# templates/account/security.html #}
+{% extends "account/base.html" %}
+
+{% block account_content %}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-text">Login & Security</h2>
+
+  <div class="space-y-4">
+    <!-- Account Information Section -->
+    <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+      <div class="p-4 bg-white border-b border-gray-200 flex justify-between items-center">
+        <div class="flex items-center">
+          <i class="fas fa-user-circle text-primary text-xl mr-3"></i>
+          <h3 class="font-medium">Account Information</h3>
+        </div>
+        <button id="toggleAccountInfo" class="text-gray-500 hover:text-primary">
+          <i class="fas fa-chevron-down transition-transform duration-300"></i>
+        </button>
+      </div>
+
+      <div id="accountInfoContent" class="p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-200">
+          <div>
+            <p class="text-sm text-gray-500">Name</p>
+            <p class="font-medium">{{ user.name }}</p>
+          </div>
+          <button class="mt-2 sm:mt-0 text-primary hover:underline text-sm flex items-center">
+            Edit <i class="fas fa-edit ml-1"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-200">
+          <div>
+            <p class="text-sm text-gray-500">Email</p>
+            <p class="font-medium">{{ user.email }}</p>
+          </div>
+          <button class="mt-2 sm:mt-0 text-primary hover:underline text-sm flex items-center">
+            Edit <i class="fas fa-edit ml-1"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Phone</p>
+            <p class="font-medium">{{ user.phone if user.phone else 'Not added' }}</p>
+          </div>
+          <button class="mt-2 sm:mt-0 text-primary hover:underline text-sm flex items-center">
+            {{ 'Add' if not user.phone else 'Edit' }} <i class="fas fa-{{ 'plus' if not user.phone else 'edit' }} ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Section -->
+    <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+      <div class="p-4 bg-white border-b border-gray-200 flex justify-between items-center">
+        <div class="flex items-center">
+          <i class="fas fa-lock text-primary text-xl mr-3"></i>
+          <h3 class="font-medium">Password & Authentication</h3>
+        </div>
+        <button id="togglePasswordSection" class="text-gray-500 hover:text-primary">
+          <i class="fas fa-chevron-down transition-transform duration-300"></i>
+        </button>
+      </div>
+
+      <div id="passwordSectionContent" class="p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-200">
+          <div>
+            <p class="text-sm text-gray-500">Password</p>
+            <p class="font-medium">••••••••</p>
+          </div>
+          <button class="mt-2 sm:mt-0 text-primary hover:underline text-sm flex items-center">
+            Change Password <i class="fas fa-key ml-1"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500">Two-Factor Authentication</p>
+            <p class="font-medium">{{ 'Enabled' if user.two_factor_enabled else 'Disabled' }}</p>
+          </div>
+          <button class="mt-2 sm:mt-0 px-3 py-1.5 text-sm {{ 'bg-red-100 text-red-700' if user.two_factor_enabled else 'bg-green-100 text-green-700' }} rounded hover:opacity-90 transition-opacity flex items-center">
+            {{ 'Disable' if user.two_factor_enabled else 'Enable' }} <i class="fas fa-{{ 'shield-alt' if not user.two_factor_enabled else 'shield' }} ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Section -->
+    <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+      <div class="p-4 bg-white border-b border-gray-200 flex justify-between items-center">
+        <div class="flex items-center">
+          <i class="fas fa-user-shield text-primary text-xl mr-3"></i>
+          <h3 class="font-medium">Privacy Settings</h3>
+        </div>
+        <button id="togglePrivacySection" class="text-gray-500 hover:text-primary">
+          <i class="fas fa-chevron-down transition-transform duration-300"></i>
+        </button>
+      </div>
+
+      <div id="privacySectionContent" class="p-5 space-y-4">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div>
+            <p class="font-medium">Email Notifications</p>
+            <p class="text-sm text-gray-500">Receive email updates about your orders and promotions</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" {{ 'checked' if user.email_notifications_enabled else '' }}>
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium">SMS Notifications</p>
+            <p class="text-sm text-gray-500">Receive text messages about your orders</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" {{ 'checked' if user.sms_notifications_enabled else '' }}>
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Account Info Section Toggle
+    const toggleAccountInfo = document.getElementById('toggleAccountInfo');
+    const accountInfoContent = document.getElementById('accountInfoContent');
+
+    toggleAccountInfo.addEventListener('click', function() {
+      accountInfoContent.classList.toggle('hidden');
+      toggleAccountInfo.querySelector('i').classList.toggle('rotate-180');
+    });
+
+    // Password Section Toggle
+    const togglePasswordSection = document.getElementById('togglePasswordSection');
+    const passwordSectionContent = document.getElementById('passwordSectionContent');
+
+    togglePasswordSection.addEventListener('click', function() {
+      passwordSectionContent.classList.toggle('hidden');
+      togglePasswordSection.querySelector('i').classList.toggle('rotate-180');
+    });
+
+    // Privacy Section Toggle
+    const togglePrivacySection = document.getElementById('togglePrivacySection');
+    const privacySectionContent = document.getElementById('privacySectionContent');
+
+    togglePrivacySection.addEventListener('click', function() {
+      privacySectionContent.classList.toggle('hidden');
+      togglePrivacySection.querySelector('i').classList.toggle('rotate-180');
+    });
+  });
+</script>
+{% endblock %}

@@ -2,102 +2,472 @@
 
 {% block content %}
 <style>
+
+    :root {
+        --primary-color: {{ PRIMARY_COLOR }};
+        --secondary-color: {{ SECONDARY_COLOR }};
+    }
+
+
+    /* Animation definitions */
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    .animate-fade-in {
-        animation: fadeIn 0.6s ease-out forwards;
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
     }
 
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Animation classes */
+    .animate-fade-in {
+        animation: fadeIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    .animate-fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+    }
+
+    .animate-slide-up {
+        opacity: 0;
+        animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    .animate-pulse {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Loader styling */
     .sakura-loader {
-        width: 48px;
-        height: 48px;
-        border: 5px solid #f478a7;
+        width: 60px;
+        height: 60px;
+        border: 5px solid var(--primary-color);
         border-bottom-color: transparent;
         border-radius: 50%;
         display: inline-block;
         box-sizing: border-box;
-        animation: rotation 1s linear infinite;
+        animation: rotation 1.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+        filter: drop-shadow(0 4px 8px var(--secondary-color));
     }
 
     @keyframes rotation {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* Progress bar */
+    .progress-container {
+        width: 100%;
+        max-width: 300px;
+        height: 6px;
+        background-color: #f3f4f6;
+        border-radius: 8px;
+        margin-top: 20px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(to right, {{ PRIMARY_COLOR }}, {{ SECONDARY_COLOR }});
+        border-radius: 8px;
+        transition: width 0.8s ease-in-out;
+    }
+
+    /* Card styling */
+    .status-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .status-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Success icon animation */
+    .success-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background: #ecfdf5;
+        border-radius: 50%;
+        margin: 0 auto 24px auto;
+    }
+
+    .success-icon svg {
+        width: 40px;
+        height: 40px;
+        color: #10b981;
+        stroke-width: 3;
+    }
+
+    /* Status bar colors */
+    .success-accent {
+        position: absolute;
+        height: 6px;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to right, #4ade80, #22d3ee);
+    }
+
+    .error-accent {
+        position: absolute;
+        height: 6px;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to right, #ef4444, #f59e0b);
+    }
+
+    .pending-accent {
+        position: absolute;
+        height: 6px;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to right, #f59e0b, #facc15);
+    }
+
+    /* Order details styling */
+    .order-details-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 24px 0;
+        background-color: #f9fafb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .order-details-table tr td {
+        padding: 16px 24px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .order-details-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .order-details-table td:first-child {
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .order-details-table td:last-child {
+        text-align: right;
+        font-weight: 600;
+    }
+
+     .btn-primary {
+         background: linear-gradient(to right, {{ PRIMARY_COLOR }}, {{ SECONDARY_COLOR }});
+     padding: 14px 32px;
+     border-radius: 8px;
+     color: white;
+     font-weight: 600;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.3s ease;
+     box-shadow: 0 4px 12px var(--secondary-color);
+
+     text-decoration: none;
+     }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px var(--secondary-color);
+    }
+
+
+    .btn-primary svg {
+        margin-left: 8px;
+    }
+
+    /* Background petals */
+    .petal {
+        position: absolute;
+        border-radius: 50%;
+        background-color: #fce7f3;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.6;
+    }
 </style>
 
-<body class="bg-background text-text">
-<div class="container mx-auto px-4 py-12 flex flex-col items-center">
-    <!-- Loader -->
-    <div id="loading" class="flex flex-col items-center">
-        <span class="sakura-loader"></span>
-        <p class="mt-4 text-gray-600">Fetching your order details...</p>
-    </div>
+<body class="bg-gray-50 text-gray-800 relative overflow-hidden">
+<!-- Container for background petals -->
+<div id="petal-container" class="fixed inset-0 z-0"></div>
 
-    <!-- Order Confirmation -->
-    <div id="order-status" class="hidden max-w-lg bg-white p-6 rounded-lg shadow-lg text-center animate-fade-in">
-        <div id="status-icon" class="text-5xl mb-4"></div>
-        <h2 id="status-message" class="text-2xl font-bold"></h2>
-        <p id="order-details" class="text-gray-600 mt-2"></p>
-        <a href="/" class="mt-6 inline-block bg-primary text-white px-6 py-3 rounded-md shadow-md hover:bg-secondary transition-colors">
-            Back to Home
-        </a>
+<div class="container mx-auto px-4 py-16 flex flex-col items-center min-h-screen justify-center relative z-10">
+    <!-- Order Confirmation Section - Initially Hidden -->
+    <div id="content-container" class="w-full max-w-md">
+        <!-- This container will be manipulated by JS -->
     </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
+        const contentContainer = document.getElementById("content-container");
         const orderId = "{{ order_id }}";
-        const loadingDiv = document.getElementById("loading");
-        const statusDiv = document.getElementById("order-status");
-        const statusIcon = document.getElementById("status-icon");
-        const statusMessage = document.getElementById("status-message");
-        const orderDetails = document.getElementById("order-details");
 
-        fetch(`/api/order/${orderId}`)
-            .then(response => response.json())
+        // Create background petals
+        createBackgroundPetals();
+
+        // Show loader first
+        showLoader();
+
+        // Fetch order data with real progress tracking
+        fetchWithLoading(`/api/order/${orderId}`)
             .then(data => {
-                loadingDiv.classList.add("hidden");
-
                 if (data.success) {
-                    const order = data.order;
-                    let statusText = "";
-                    let iconHtml = "";
-
-                    if (order.status === "Paid") {
-                        statusText = "Payment Successful!";
-                        iconHtml = `<i class="fas fa-check-circle text-green-500"></i>`;
-                    } else if (order.status === "Payment Failed") {
-                        statusText = "Payment Failed!";
-                        iconHtml = `<i class="fas fa-times-circle text-red-500"></i>`;
-                    } else {
-                        statusText = "Order Pending...";
-                        iconHtml = `<i class="fas fa-clock text-yellow-500"></i>`;
-                    }
-
-                    statusIcon.innerHTML = iconHtml;
-                    statusMessage.innerText = statusText;
-                    orderDetails.innerText = `Order ID: ${order.order_id} | Total: {{ CURRENCY_SYMBOL }} ${order.total}`;
-
-                    statusDiv.classList.remove("hidden");
+                    showSuccessState(data.order);
                 } else {
-                    statusMessage.innerText = "Order Not Found!";
-                    statusIcon.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500"></i>`;
-                    orderDetails.innerText = "Please contact support if you believe this is an error.";
-                    statusDiv.classList.remove("hidden");
+                    showErrorState("Order Not Found");
                 }
             })
             .catch(error => {
                 console.error("Error fetching order:", error);
-                loadingDiv.classList.add("hidden");
-                statusDiv.classList.remove("hidden");
-                statusMessage.innerText = "Something went wrong!";
-                statusIcon.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500"></i>`;
-                orderDetails.innerText = "Please try again later.";
+                showErrorState("Something went wrong");
             });
     });
+
+    // Function to show the loader
+    function showLoader() {
+        const loaderHtml = `
+                <div id="loader-container" class="flex flex-col items-center animate-fade-in">
+                    <div class="sakura-loader"></div>
+                    <p class="mt-6 text-gray-600 font-medium text-lg">Fetching your order details...</p>
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("content-container").innerHTML = loaderHtml;
+    }
+    // Function to show loading progress dynamically while fetching data
+    async function fetchWithLoading(url) {
+        const progressBar = document.getElementById("progress-bar");
+        const loaderContainer = document.getElementById("loader-container");
+
+        progressBar.style.width = "0%"; // Reset progress bar
+        loaderContainer.classList.remove("hidden");
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress = Math.min(progress + Math.random() * 20, 95); // Increase randomly but stay below 100%
+            progressBar.style.width = `${progress}%`;
+        }, 100);
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            clearInterval(interval);
+            progressBar.style.width = "100%"; // Complete the bar
+
+            setTimeout(() => {
+                loaderContainer.classList.add("hidden"); // Hide loader
+            }, 500); // Wait for the fade-out
+
+            return data;
+        } catch (error) {
+            clearInterval(interval);
+            loaderContainer.classList.add("hidden"); // Hide loader if error
+            console.error("Error fetching data:", error);
+            throw error;
+        }
+    }
+
+    // Function to fetch order data from an actual API
+    function fetchOrderData(orderId) {
+        return fetch(`/api/order/${orderId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error("Error fetching order data:", error);
+                throw error;
+            });
+    }
+
+
+    // Function to show success state
+    function showSuccessState(order) {
+        const successHtml = `
+                <div class="status-card p-8 animate-fade-in">
+                    <div class="success-accent"></div>
+
+                    <div class="success-icon animate-pulse">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-center mb-4 animate-slide-up" style="animation-delay: 0.1s">
+                        Payment Successful!
+                    </h2>
+
+                    <p class="text-gray-600 text-center mb-6 animate-slide-up" style="animation-delay: 0.2s">
+                        Your order has been processed successfully.
+                    </p>
+
+                    <table class="order-details-table animate-slide-up" style="animation-delay: 0.3s">
+                        <tr>
+                            <td>Order ID:</td>
+                            <td>${order.order_id}</td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td>${order.placed_on}</td>
+                        </tr>
+                        <tr>
+                            <td>Total:</td>
+                            <td>₹ ${order.total.toFixed(2)}</td>
+                        </tr>
+                    </table>
+
+                    <div class="flex justify-center mt-8 animate-slide-up" style="animation-delay: 0.4s">
+                        <a href="/" class="btn-primary">
+                            <span>Back to Home</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M12 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("content-container").innerHTML = successHtml;
+    }
+
+    // Function to show error state
+    function showErrorState(errorMessage) {
+        const errorHtml = `
+                <div class="status-card p-8 animate-fade-in">
+                    <div class="error-accent"></div>
+
+                    <div class="success-icon" style="background-color: #fee2e2;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-center mb-4 animate-slide-up" style="animation-delay: 0.1s">
+                        ${errorMessage}
+                    </h2>
+
+                    <p class="text-gray-600 text-center mb-6 animate-slide-up" style="animation-delay: 0.2s">
+                        Please contact support if you believe this is an error.
+                    </p>
+
+                    <div class="flex justify-center mt-8 animate-slide-up" style="animation-delay: 0.3s">
+                        <a href="/" class="btn-primary">
+                            <span>Back to Home</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"></path>
+                                <path d="M12 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("content-container").innerHTML = errorHtml;
+    }
+
+    // Function to create animated background petals
+    function createBackgroundPetals() {
+        const container = document.getElementById('petal-container');
+        const petalColors = ['{{ SECONDARY_COLOR }}', '{{ PRIMARY_COLOR }}'];
+        const numPetals = 30;
+
+        for (let i = 0; i < numPetals; i++) {
+            createPetal(container, petalColors);
+        }
+    }
+
+    function createPetal(container, colors) {
+        const petal = document.createElement('div');
+        const size = Math.random() * 60 + 20; // Between 20px and 80px
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        petal.classList.add('petal');
+        petal.style.width = `${size}px`;
+        petal.style.height = `${size}px`;
+        petal.style.backgroundColor = color;
+        petal.style.left = `${Math.random() * 100}vw`;
+        petal.style.top = `${Math.random() * 100}vh`;
+        petal.style.opacity = Math.random() * 0.4 + 0.1;
+
+        container.appendChild(petal);
+
+        // Animate the petal
+        animatePetal(petal);
+    }
+
+    function animatePetal(petal) {
+        const startX = parseFloat(petal.style.left);
+        const startY = parseFloat(petal.style.top);
+        const duration = Math.random() * 15 + 15; // Between 15 and 30 seconds
+        const amplitude = Math.random() * 30 + 10; // Between 10 and 40px
+
+        let startTime;
+
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = (timestamp - startTime) / 1000; // seconds
+
+            // Sinusoidal movement
+            const newX = startX + Math.sin(elapsed) * amplitude;
+            const newY = startY + elapsed * 10; // Slowly moving down
+
+            petal.style.transform = `translate(${Math.sin(elapsed * 0.5) * 10}px, ${elapsed * 10}px) rotate(${elapsed * 10}deg)`;
+
+            if (elapsed < duration) {
+                requestAnimationFrame(animate);
+            } else {
+                // Reset position when animation completes
+                petal.style.left = `${Math.random() * 100}vw`;
+                petal.style.top = `-${parseFloat(petal.style.height)}px`;
+                startTime = null;
+                requestAnimationFrame(animate);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
 </script>
 </body>
 {% endblock %}
