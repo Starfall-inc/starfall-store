@@ -74,6 +74,45 @@
             animation: slide-out 0.4s ease-out forwards;
         }
 
+        /* Tooltip styling */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-background min-h-screen flex items-center justify-center p-4">
@@ -134,15 +173,38 @@
             </div>
 
             <div class="mt-6 grid grid-cols-3 gap-3">
-                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                {% if ENABLED_OAUTH_PROVIDERS.google %}
+                <a href="{{ url_for('auth.login_google') }}" class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                     <i class="fab fa-google text-xl"></i>
-                </button>
-                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                </a>
+                {% else %}
+                <div class="tooltip">
+                    <button disabled class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md bg-gray-100 opacity-60 cursor-not-allowed">
+                        <i class="fab fa-google text-xl text-gray-400"></i>
+                    </button>
+                    <span class="tooltiptext">Google login is currently unavailable</span>
+                </div>
+                {% endif %}
+
+                {% if ENABLED_OAUTH_PROVIDERS.facebook %}
+                <a href="{{ url_for('auth.login_facebook') }}" class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                     <i class="fab fa-facebook-f text-xl"></i>
-                </button>
-                <button class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                    <i class="fab fa-apple text-xl"></i>
-                </button>
+                </a>
+                {% else %}
+                <div class="tooltip">
+                    <button disabled class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md bg-gray-100 opacity-60 cursor-not-allowed">
+                        <i class="fab fa-facebook-f text-xl text-gray-400"></i>
+                    </button>
+                    <span class="tooltiptext">Facebook login is currently unavailable</span>
+                </div>
+                {% endif %}
+
+                <div class="tooltip">
+                    <button disabled class="flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md bg-gray-100 opacity-60 cursor-not-allowed">
+                        <i class="fab fa-apple text-xl text-gray-400"></i>
+                    </button>
+                    <span class="tooltiptext">Apple login is currently unavailable</span>
+                </div>
             </div>
         </div>
 
@@ -155,7 +217,6 @@
 </div>
 
 <script>
-
     function showToast(message, type = "success") {
         // Select the toast container
         const toastContainer = document.getElementById("toast-container");
@@ -241,7 +302,6 @@
             loader.classList.remove('fade-in');
         }
     });
-
 </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from app.modules.UserManager import CustomerManager
 from app.modules.SessionManager import SessionManager
+from app.extensions import oauth, seraphina
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -53,9 +54,77 @@ def login():
 
     return response
 
+
 @auth_bp.route("/check-session")
 def check_session():
     session_id = request.cookies.get("session_id")
     if session_id and SessionManager.get_session(session_id):
         return jsonify({"logged_in": True})
     return jsonify({"logged_in": False})
+
+
+# ✅ Google OAuth Login
+@auth_bp.route("/login/google")
+def login_google():
+    return oauth.google.authorize_redirect(url_for("auth.google_callback", _external=True))
+
+
+@auth_bp.route("/login/google/callback")
+def google_callback():
+    token = oauth.google.authorize_access_token()
+    user_info = oauth.google.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
+
+    if not user_info or "email" not in user_info:
+        return jsonify({"error": "Google authentication failed"}), 400
+
+    user = CustomerManager.get_user_by_email(user_info["email"])
+    if not user:
+        user = CustomerManager.create_user(
+            first_name=user_info.get("given_name", ""),
+            last_name=user_info.get("family_name", ""),
+            email=user_info["email"],
+            password=None,
+            auth_provider="google"
+        )
+
+    session_id = SessionManager.create_session(user.id)
+
+    seraphina.info(f"a google User created: {user}")
+
+    response = redirect("/")
+    response.set_cookie("session_id", session_id, httponly=True, secure=True)
+    return response
+
+
+# ✅ Facebook OAuth Login
+@auth_bp.route("/login/facebook")
+def login_facebook():
+    return oauth.facebook.authorize_redirect(url_for("auth.facebook_callback", _external=True))
+
+
+@auth_bp.route("/login/facebook/callback")
+def facebook_callback():
+    token = oauth.facebook.authorize_access_token()
+    user_info = oauth.facebook.get("me?fields=id,name,email").json()
+
+    if not user_info or "email" not in user_info:
+        return jsonify({"error": "Facebook authentication failed"}), 400
+
+    user = CustomerManager.get_user_by_email(user_info["email"])
+    if not user:
+        first_name, last_name = user_info["name"].split(" ", 1)
+        user = CustomerManager.create_user(
+            first_name=first_name,
+            last_name=last_name,
+            email=user_info["email"],
+            password=None,
+            auth_provider="google"
+        )
+
+        seraphina.info(f"a facebook User created: {user}")
+
+    session_id = SessionManager.create_session(user.id)
+
+    response = redirect("/")
+    response.set_cookie("session_id", session_id, httponly=True, secure=True)
+    return response

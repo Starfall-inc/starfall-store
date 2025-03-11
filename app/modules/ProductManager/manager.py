@@ -1,7 +1,5 @@
-from app.models import db, Product, ProductCategory
-from sqlalchemy.exc import SQLAlchemyError
+from app.models.models import Product, ProductCategory
 from app.extensions import db  # ✅ Import from extensions.py
-from app.extensions import seraphina as logger  # ✅ Import from extensions.py
 
 
 class ProductManager:

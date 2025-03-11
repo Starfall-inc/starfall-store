@@ -1,11 +1,9 @@
 import hmac
 import hashlib
-import json
-import requests
 from datetime import datetime
 from flask import current_app
 from app.extensions import db, seraphina
-from app.models import Order, PaymentTransaction
+from app.models.models import Order, PaymentTransaction
 import razorpay
 
 

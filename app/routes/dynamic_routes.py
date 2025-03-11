@@ -1,6 +1,5 @@
 from flask import Blueprint, request, render_template, jsonify
 
-from app.models import User
 from app.modules.CartManager.manager import CartManager
 from app.modules.UserManager.manager import CustomerManager
 from app.modules.SessionManager.manager import SessionManager

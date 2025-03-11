@@ -1,7 +1,7 @@
 import hashlib
 from datetime import datetime
 from sqlalchemy.orm import joinedload
-from app.models import Cart, Product, User, db
+from app.models.models import Cart, Product, User, db
 
 
 class CartManager:

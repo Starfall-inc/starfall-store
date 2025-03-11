@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from app.extensions import db
 from app.modules.CartManager.manager import CartManager
-from app.models import User, Product, Order, OrderDetail
+from app.models.models import User, Product, Order, OrderDetail
 
 
 class OrderManager:

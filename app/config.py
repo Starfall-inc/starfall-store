@@ -17,7 +17,12 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "c4d2e2f68f114b2d8d7a2f3a8e9b1c6f7e8d9f3b6a2c5d4e1a8c9b7d6e1f2a3c")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///database.db")  # Default to SQLite
+    SQLALCHEMY_BINDS = {
+        "admin_db": os.getenv("ADMIN_SQLALCHEMY_DATABASE_URI", "sqlite:///admin.db"),
+    }
+
     DEBUG = False
     LOG_DIR = Path(__file__).parent / "logs"
     MAIN_LOG_FILE = LOG_DIR / "app.log"
@@ -43,7 +48,6 @@ class Config:
     BACKGROUND_COLOR = config_data["shop"]["theme"]["background"]
     DARK_COLOR = config_data["shop"]["theme"]["dark"]
 
-
     # Cache Settings :
     CACHE_TYPE = 'simple'
     CACHE_DEFAULT_TIMEOUT = 300
@@ -52,6 +56,12 @@ class Config:
     RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
     RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
     RAZORPAY_CALLBACK_PATH = os.getenv("RAZORPAY_CALLBACK_PATH", "/api/payment/callback")
+
+    # OAuth Configurations
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+    FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID")
+    FACEBOOK_CLIENT_SECRET = os.getenv("FACEBOOK_CLIENT_SECRET")
 
 
 class ProductionConfig(Config):

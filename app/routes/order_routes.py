@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from app.models import Order
+from app.models.models import Order
 from app.modules.OrderManager.manager import OrderManager
 from app.modules.PaymentManager.manager import PaymentManager
 from app.modules.SessionManager.manager import SessionManager

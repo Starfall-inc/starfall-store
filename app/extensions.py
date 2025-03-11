@@ -1,13 +1,17 @@
 import redis
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app
+from authlib.integrations.flask_client import OAuth
 from .Seraphina import Seraphina
 from flask_caching import Cache
 
 db = SQLAlchemy()
-seraphina = None  # Keep it None initially
+admin_db = SQLAlchemy()  # Admin Database
+
+seraphina = None
 redis_clients = {}
 cache = None
+oauth = OAuth()
 
 
 def init_seraphina(app):
@@ -25,15 +29,46 @@ def init_seraphina(app):
 
 def init_redis(app):
     global seraphina
-    """Initializes Redis connections for different database indexes."""
     redis_url = app.config.get("REDIS_URL", "redis://localhost:6379/")
-    for db_index in range(5):  # Example: Creating connections for DBs 0 to 4
+    for db_index in range(5):
         redis_clients[db_index] = redis.StrictRedis.from_url(redis_url, db=db_index, decode_responses=True)
 
-    total_database = len(redis_clients)
-    seraphina.info(f"Redis connection established for {total_database} databases.")
+    seraphina.info(f"Redis connection established for {len(redis_clients)} databases.")
 
 
 def init_cache(app):
     global cache
     cache = Cache(app)
+
+
+def init_oauth(app):
+    """Initialize OAuth providers dynamically"""
+
+    seraphina.info("Initializing OAuth providers...")
+
+    oauth.init_app(app)
+
+    if app.config.get("GOOGLE_CLIENT_ID"):
+        oauth.register(
+            name="google",
+            client_id=app.config["GOOGLE_CLIENT_ID"],
+            client_secret=app.config["GOOGLE_CLIENT_SECRET"],
+            access_token_url="https://oauth2.googleapis.com/token",
+            authorize_url="https://accounts.google.com/o/oauth2/auth",
+            userinfo_endpoint="https://www.googleapis.com/oauth2/v1/userinfo",  # ✅ Correct endpoint
+            client_kwargs={"scope": "openid email profile"},
+            jwks_uri="https://www.googleapis.com/oauth2/v3/certs"  # ✅ Explicitly set JWKS URI
+        )
+
+    if app.config.get("FACEBOOK_CLIENT_ID"):
+        oauth.register(
+            name="facebook",
+            client_id=app.config["FACEBOOK_CLIENT_ID"],
+            client_secret=app.config["FACEBOOK_CLIENT_SECRET"],
+            access_token_url="https://graph.facebook.com/oauth/access_token",
+            authorize_url="https://www.facebook.com/v14.0/dialog/oauth",
+            userinfo_endpoint="https://graph.facebook.com/me?fields=id,name,email",
+            client_kwargs={"scope": "email"}
+        )
+
+    seraphina.info("OAuth providers initialized successfully!")

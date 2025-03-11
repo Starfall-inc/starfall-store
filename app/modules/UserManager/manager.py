@@ -1,4 +1,4 @@
-from app.models import User
+from app.models.models import User
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from app.extensions import db
 from app.utils.hash_utils import hash_password, confirm_password_hash
