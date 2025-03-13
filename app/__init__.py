@@ -85,6 +85,8 @@ def create_app():
             "ENABLED_OAUTH_PROVIDERS": ENABLED_OAUTH_PROVIDERS  # ✅ Inject enabled OAuth providers
         })
 
+
+
         # ✅ Auto-create tables if necessary
         if "sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]:
             db.create_all()
