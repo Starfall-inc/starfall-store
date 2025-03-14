@@ -1,4 +1,6 @@
 from flask import Blueprint
+
+from app.routes.admin.static_pages_routes import admin_static_routes_bp
 from app.routes.product_routes import product_bp
 from app.routes.static_routes import staticroute_bp
 from app.routes.auth_routes import auth_bp
@@ -23,3 +25,6 @@ def register_blueprints(app):
 
     # Dynamic Routes
     app.register_blueprint(dynamic_route_bp, url_prefix="/")
+
+    # Admin Routes (static)
+    app.register_blueprint(admin_static_routes_bp, url_prefix="/admin")

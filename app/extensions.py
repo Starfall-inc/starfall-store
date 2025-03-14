@@ -4,6 +4,8 @@ from flask import current_app
 from authlib.integrations.flask_client import OAuth
 from .Seraphina import Seraphina
 from flask_caching import Cache
+from minio import Minio
+
 
 db = SQLAlchemy()
 admin_db = SQLAlchemy()  # Admin Database
@@ -12,6 +14,7 @@ seraphina = None
 redis_clients = {}
 cache = None
 oauth = OAuth()
+minio_client = None
 
 
 def init_seraphina(app):
@@ -72,3 +75,13 @@ def init_oauth(app):
         )
 
     seraphina.info("OAuth providers initialized successfully!")
+
+
+def init_minio(app):
+    """Initialize MinIO client using Flask app configuration and store it in Flask extensions."""
+    app.extensions["minio_client"] = Minio(
+        endpoint=app.config.get("MINIO_ENDPOINT", "sangonomiya.icu:9000"),
+        access_key=app.config.get("MINIO_ACCESS_KEY", "your_minio_access_key"),
+        secret_key=app.config.get("MINIO_SECRET_KEY", "your_minio_secret_key"),
+        secure=app.config.get("MINIO_SECURE", "false").lower() == "true"  # `False` for HTTP, `True` for HTTPS
+    )

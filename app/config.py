@@ -63,6 +63,12 @@ class Config:
     FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID")
     FACEBOOK_CLIENT_SECRET = os.getenv("FACEBOOK_CLIENT_SECRET")
 
+    # MinIO Configurations
+    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
+    MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minio")
+    MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minio123")
+    MINIO_BUCKET = os.getenv("MINIO_BUCKET", "shop")
+
 
 class ProductionConfig(Config):
     """Production-specific configuration"""
