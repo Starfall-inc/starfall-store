@@ -1,0 +1,27 @@
+<table class="w-full border rounded-lg">
+    <thead>
+    <tr class="bg-gray-200">
+        <th class="p-2">Image</th>
+        <th class="p-2">Product</th>
+        <th class="p-2">Category</th>
+        <th class="p-2">Price</th>
+        <th class="p-2">Stock</th>
+        <th class="p-2">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for product in products %}
+    <tr class="border-t">
+        <td class="p-2"><img src="{{ product.images[0].image_url }}" class="w-10 h-10"></td>
+        <td class="p-2">{{ product.name }}</td>
+        <td class="p-2">{{ product.category_rel.name }}</td>
+        <td class="p-2">{{  }}{{ product.price }}</td>
+        <td class="p-2">{{ product.stock_quantity }}</td>
+        <td class="p-2">
+            <button @click="openEditModal({{ product.id }})" class="text-blue-500">Edit</button> |
+            <a href="/admin/product/delete/{{ product.id }}" class="text-red-500">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -48,6 +48,14 @@ class ProductCategory(db.Model):
     def __repr__(self):
         return f'<ProductCategory {self.name}>'
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category_image": self.category_image,
+            "description": self.description
+        }
+
 
 class Product(db.Model):
     __tablename__ = 'products'

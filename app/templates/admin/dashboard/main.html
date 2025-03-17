@@ -1,0 +1,260 @@
+{% block content %}
+<!-- Card Stats Section -->
+<div class="p-6 transition-all duration-300 ease-in-out">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Users -->
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-l-4 border-primary overflow-hidden relative group">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Total Users</p>
+                    <p class="text-2xl font-bold">{{ total_users }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <i class="fas fa-users text-2xl"></i>
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-24 h-24 bg-primary/5 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-l-4 border-green-500 overflow-hidden relative group">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Total Orders</p>
+                    <p class="text-2xl font-bold">{{ total_orders }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                    <i class="fas fa-shopping-cart text-2xl"></i>
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-24 h-24 bg-green-500/5 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+        </div>
+
+        <!-- Pending Orders -->
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-l-4 border-yellow-500 overflow-hidden relative group">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Pending Orders</p>
+                    <p class="text-2xl font-bold">{{ pending_orders }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-24 h-24 bg-yellow-500/5 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+        </div>
+
+        <!-- Completed Orders -->
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-l-4 border-teal-500 overflow-hidden relative group">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Completed Orders</p>
+                    <p class="text-2xl font-bold">{{ completed_orders }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-500">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                </div>
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-24 h-24 bg-teal-500/5 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+        </div>
+    </div>
+
+    <!-- Revenue & Stats Section -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Total Revenue</h3>
+                <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-bold text-green-600">₹{{ total_revenue }}</p>
+            <div class="h-1 w-full bg-gray-100 mt-4 rounded-full overflow-hidden">
+                <div class="h-full bg-green-500 w-3/4 rounded-full"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Total Products</h3>
+                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <i class="fas fa-boxes"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-bold">{{ total_products }}</p>
+            <div class="h-1 w-full bg-gray-100 mt-4 rounded-full overflow-hidden">
+                <div class="h-full bg-primary w-1/2 rounded-full"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Total Categories</h3>
+                <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                    <i class="fas fa-tag"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-bold">{{ total_categories }}</p>
+            <div class="h-1 w-full bg-gray-100 mt-4 rounded-full overflow-hidden">
+                <div class="h-full bg-secondary w-2/3 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold">Recent Orders</h3>
+            <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium flex items-center transition-colors">
+                View All
+                <i class="fas fa-chevron-right ml-1 text-xs"></i>
+            </a>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gray-50">
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                    {% for order in recent_orders %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#{{ order.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">₹{{ order.total }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if order.status == 'Completed' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  {{ order.status }}
+                </span>
+                            {% elif order.status == 'Pending' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                  {{ order.status }}
+                </span>
+                            {% elif order.status == 'Cancelled' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                  {{ order.status }}
+                </span>
+                            {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                  {{ order.status }}
+                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <button class="text-primary hover:text-primary/80 transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold">Recent Users</h3>
+            <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium flex items-center transition-colors">
+                View All
+                <i class="fas fa-chevron-right ml-1 text-xs"></i>
+            </a>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gray-50">
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined At</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                    {% for user in recent_users %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <span class="text-xs font-medium">{{ user.first_name[0] }}{{ user.last_name[0] }}</span>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium">{{ user.first_name }} {{ user.last_name }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ user.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.joined_at.strftime('%Y-%m-%d') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <button class="text-primary hover:text-primary/80 transition-colors">
+                                <i class="fas fa-user-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Adding animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Apply animations to elements */
+    .grid > div {
+        animation: fadeIn 0.5s ease-out forwards;
+        animation-fill-mode: both;
+    }
+
+    .grid > div:nth-child(1) { animation-delay: 0.1s; }
+    .grid > div:nth-child(2) { animation-delay: 0.2s; }
+    .grid > div:nth-child(3) { animation-delay: 0.3s; }
+    .grid > div:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Pulse effect on hover for action buttons */
+    button:hover i {
+        animation: pulse 0.6s infinite;
+    }
+
+    /* Custom scrollbar for tables */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: rgba(var(--color-primary), 0.3);
+        border-radius: 10px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: rgba(var(--color-primary), 0.5);
+    }
+</style>
+{% endblock %}

@@ -23,7 +23,7 @@ class Config:
         "admin_db": os.getenv("ADMIN_SQLALCHEMY_DATABASE_URI", "sqlite:///admin.db"),
     }
 
-    DEBUG = False
+    DEBUG = True
     LOG_DIR = Path(__file__).parent / "logs"
     MAIN_LOG_FILE = LOG_DIR / "app.log"
     LOG_DIR.mkdir(exist_ok=True)
@@ -73,7 +73,7 @@ class Config:
 class ProductionConfig(Config):
     """Production-specific configuration"""
     ENV = "production"
-    DEBUG = False
+    DEBUG = True
 
     # Database Configurations
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@localhost:3306/database")

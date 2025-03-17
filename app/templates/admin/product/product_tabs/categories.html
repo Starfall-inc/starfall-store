@@ -1,0 +1,21 @@
+<table class="w-full border rounded-lg">
+    <thead>
+    <tr class="bg-gray-200">
+        <th class="p-2">Category</th>
+        <th class="p-2">Description</th>
+        <th class="p-2">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for category in categories %}
+    <tr class="border-t">
+        <td class="p-2">{{ category.name }}</td>
+        <td class="p-2">{{ category.description }}</td>
+        <td class="p-2">
+            <a href="/admin/category/edit/{{ category.id }}" class="text-blue-500">Edit</a> |
+            <a href="/admin/category/delete/{{ category.id }}" class="text-red-500">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

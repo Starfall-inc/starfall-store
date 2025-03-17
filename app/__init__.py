@@ -23,6 +23,10 @@ def create_app():
     # Setting up helper utils
     app.jinja_env.filters['format_price'] = format_price
 
+    app.config["DEBUG"] = True
+    app.config["TEMPLATES_AUTO_RELOAD"] = True  # Reloads templates without restart
+
+
     # Initialize database
     db.init_app(app)
 

@@ -84,7 +84,6 @@ def get_product_categories():
 
 # search products by query or category
 @product_bp.route("/search", methods=["GET"])
-@product_bp.route("/search", methods=["GET"])
 def search_products():
     query = request.args.get("query", "").strip()
     category_id = request.args.get("category", "").strip()
@@ -105,8 +104,6 @@ def search_products():
     return jsonify({
         "products": products_dict
     })
-
-
 
 
 # get product under specific category by category_id

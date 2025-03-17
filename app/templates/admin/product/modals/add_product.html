@@ -1,0 +1,22 @@
+<form method="POST" action="/admin/product/add" enctype="multipart/form-data">
+    <label class="block font-semibold">Product Name</label>
+    <input type="text" name="name" class="w-full p-2 border rounded mb-2">
+
+    <label class="block font-semibold">Category</label>
+    <select name="category_id" class="w-full p-2 border rounded mb-2">
+        {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label class="block font-semibold">Price</label>
+    <input type="number" name="price" class="w-full p-2 border rounded mb-2">
+
+    <label class="block font-semibold">Stock</label>
+    <input type="number" name="stock_quantity" class="w-full p-2 border rounded mb-2">
+
+    <label class="block font-semibold">Upload Image</label>
+    <input type="file" name="image" class="w-full p-2 border rounded mb-2">
+
+    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Add Product</button>
+</form>
