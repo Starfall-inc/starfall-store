@@ -31,6 +31,7 @@ def admin_dashboard():
         recent_users=recent_users
     )
 
+
 @admin_static_routes_bp.route("/products", methods=["GET"])
 def manage_products():
     """
@@ -44,6 +45,7 @@ def manage_products():
     category_list = [category.to_dict() for category in categories]
 
     return render_template("admin/product/main.html", products=product_list, categories=category_list)
+
 
 @admin_static_routes_bp.route("/product/add", methods=["POST"])
 def add_product():
@@ -130,3 +132,13 @@ def add_category():
         flash(f"Error: {str(e)}", "danger")
 
     return redirect(url_for("admin.manage_products"))
+
+
+# --------- Order Static Page Routes --------- #
+
+@admin_static_routes_bp.route("/orders", methods=["GET"])
+def manage_orders():
+    """
+    Renders the order management dashboard with all orders.
+    """
+    return render_template("admin/orders/main.html")

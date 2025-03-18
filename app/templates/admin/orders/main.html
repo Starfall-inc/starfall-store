@@ -1,0 +1,140 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="bg-white shadow-md rounded-lg p-4">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4"><i class="fas fa-box  animate__animated animate__bounceIn animate__delay-1s"></i> Order Management</h2>
+
+    <!-- Tabs for different order statuses -->
+    <div class="flex space-x-4 border-b pb-2">
+        <button class="tab-button active" data-tab="pending"><i class="fas fa-clock animate__animated animate__bounceIn animate__delay-100ms"></i> Pending</button>
+        <button class="tab-button" data-tab="shipped"><i class="fas fa-truck animate__animated animate__bounceIn animate__delay-150ms"></i> Shipped</button>
+        <button class="tab-button" data-tab="delivered"><i class="fas fa-check-circle animate__animated animate__bounceIn animate__delay-200ms"></i> Delivered</button>
+        <button class="tab-button" data-tab="canceled"><i class="fas fa-times-circle animate__animated animate__bounceIn animate__delay-250ms"></i> Canceled</button>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="flex items-center justify-between my-4">
+        <input type="text" id="search-orders" placeholder="Search orders..." class="px-3 py-2 border rounded-lg w-1/3">
+        <select id="sort-orders" class="px-3 py-2 border rounded-lg">
+            <option value="latest">Sort by Latest</option>
+            <option value="oldest">Sort by Oldest</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="price_low">Price: Low to High</option>
+        </select>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border rounded-lg shadow-md">
+            <thead>
+            <tr class="bg-gray-100 text-left">
+                <th class="p-3">Order ID</th>
+                <th class="p-3">Date</th>
+                <th class="p-3">Total</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="orders-table">
+            <!-- Orders will be dynamically injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let ordersData = [];
+
+        // Fetch orders from API
+        async function fetchOrders() {
+            const response = await fetch("/api/admin/order");
+            ordersData = await response.json();
+            renderOrders("Paid");
+        }
+
+        // Render orders based on tab selection
+        function renderOrders(status) {
+            const tableBody = document.getElementById("orders-table");
+            tableBody.innerHTML = "";
+
+            const filteredOrders = ordersData.filter(order => order.status === status);
+            filteredOrders.forEach(order => {
+                tableBody.innerHTML += `
+                <tr class="border-b">
+                    <td class="p-3">${order.id}</td>
+                    <td class="p-3">${new Date(order.order_place_date).toLocaleDateString()}</td>
+                    <td class="p-3">₹${order.total}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded-lg text-white ${getStatusClass(order.status)}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="viewOrder(${order.id})" class="text-blue-500"><i class="fas fa-eye"></i></button>
+                        ${order.status === "pending" ? `<button onclick="cancelOrder(${order.id})" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : ""}
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        // Handle Tab Clicks
+        document.querySelectorAll(".tab-button").forEach(button => {
+            button.addEventListener("click", function () {
+                document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+                renderOrders(this.dataset.tab);
+            });
+        });
+
+        // Search Functionality
+        document.getElementById("search-orders").addEventListener("input", function () {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll("#orders-table tr");
+            tableRows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? "" : "none";
+            });
+        });
+
+        // Cancel Order API Call
+        async function cancelOrder(orderId) {
+            if (!confirm("Are you sure you want to cancel this order?")) return;
+            await fetch(`/api/admin/order/${orderId}/cancel`, { method: "PUT" });
+            fetchOrders();
+        }
+
+        // View Order Details
+        function viewOrder(orderId) {
+            window.location.href = `/order/${orderId}`;
+        }
+
+        // Get Status Color Class
+        function getStatusClass(status) {
+            return {
+                "pending": "bg-yellow-500",
+                "shipped": "bg-blue-500",
+                "delivered": "bg-green-500",
+                "canceled": "bg-red-500"
+            }[status] || "bg-gray-500";
+        }
+
+        fetchOrders();
+    });
+</script>
+
+<style>
+    .tab-button {
+        padding: 8px 16px;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .tab-button.active {
+        border-bottom-color: #e53e3e;
+        font-weight: bold;
+    }
+</style>
+
+{% endblock %}

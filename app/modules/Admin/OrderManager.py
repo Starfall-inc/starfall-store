@@ -4,6 +4,7 @@ from app.modules.CartManager.manager import CartManager
 from app.models.models import User, Product, Order, OrderDetail, PaymentTransaction
 from app.modules.OrderManager import OrderManager
 
+
 class AdminOrderManager(OrderManager):
     @staticmethod
     def get_all_orders(filters=None):

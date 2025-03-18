@@ -1,6 +1,7 @@
 from flask import Blueprint
 
 from app.routes.admin.static_pages_routes import admin_static_routes_bp
+from app.routes.admin.static_pages_routes.order_management_routes import admin_order_management_routes_bp
 from app.routes.product_routes import product_bp
 from app.routes.static_routes import staticroute_bp
 from app.routes.auth_routes import auth_bp
@@ -32,4 +33,5 @@ def register_blueprints(app):
 
     # Admin Routes (API)
     app.register_blueprint(admin_product_bp, url_prefix="/api/admin/product")
+    app.register_blueprint(admin_order_management_routes_bp, url_prefix="/api/admin/order")
 
