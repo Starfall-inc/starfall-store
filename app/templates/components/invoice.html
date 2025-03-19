@@ -1,0 +1,187 @@
+<!-- templates/receipt.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ store_info.name }} - Invoice</title>
+    <style>
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .invoice-header img {
+            max-width: 150px;
+            height: auto;
+        }
+        .invoice-title {
+            color: {{ theme_colors.primary }};
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .invoice-details {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .invoice-details p {
+            margin: 5px 0;
+        }
+        .section-title {
+            color: {{ theme_colors.primary }};
+            border-bottom: 2px solid {{ theme_colors.secondary }};
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        .addresses {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .addresses > div {
+            width: 48%;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th {
+            background-color: {{ theme_colors.secondary }};
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        .amount-column {
+            text-align: right;
+        }
+        .summary-table {
+            width: 50%;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+        .summary-table td {
+            padding: 5px 10px;
+        }
+        .total-row {
+            font-weight: bold;
+            border-top: 2px solid {{ theme_colors.primary }};
+            color: {{ theme_colors.primary }};
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: {{ theme_colors.secondary }};
+        }
+        .terms {
+            margin-top: 20px;
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <img src="{{ store_info.logo }}" alt="{{ store_info.name }} Logo">
+        <h1 class="invoice-title">{{ store_info.name }}</h1>
+        <p>{{ store_info.address }}</p>
+    </div>
+
+    <div class="invoice-details">
+        <p><strong>Invoice #:</strong> {{ invoice_id }}</p>
+        <p><strong>Invoice Date:</strong> {{ invoice_date }}</p>
+        <p><strong>Order Date:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p><strong>Order #:</strong> {{ order.id }}</p>
+    </div>
+
+    <div class="addresses">
+        <div>
+            <h3 class="section-title">FROM</h3>
+            <p><strong>{{ store_info.name }}</strong></p>
+            <p>{{ store_info.address }}</p>
+            <p>Email: {{ store_info.email }}</p>
+            <p>Phone: {{ store_info.phone }}</p>
+        </div>
+
+        <div>
+            <h3 class="section-title">BILL TO</h3>
+            <p><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+            <p>Email: {{ user.email }}</p>
+            {% if user.phone %}
+            <p>Phone: {{ user.phone }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3 class="section-title">ORDER ITEMS</h3>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_details %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(item.price) }}</td>
+                <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(item.subtotal) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="section-title">PAYMENT SUMMARY</h3>
+    <table class="summary-table">
+        <tr>
+            <td>Subtotal:</td>
+            <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(order_details|sum(attribute='subtotal')) }}</td>
+        </tr>
+        {% set tax_rate = store_info.tax_rate|float / 100 %}
+        {% set tax_amount = order.total|float * tax_rate %}
+        <tr>
+            <td>Tax:</td>
+            <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(tax_amount) }}</td>
+        </tr>
+        <tr>
+            <td>Shipping:</td>
+            <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(order.delivery_charges) }}</td>
+        </tr>
+        <tr class="total-row">
+            <td>Total:</td>
+            <td class="amount-column">{{ store_info.currency_symbol }}{{ "%.2f"|format(order.total_amount) }}</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p>Thank you for your business!</p>
+    </div>
+
+    <div class="terms">
+        <p>Payment Terms: Payment is due within 30 days of the invoice date.<br>
+        For questions regarding this invoice, please contact our customer service.</p>
+    </div>
+</body>
+</html>

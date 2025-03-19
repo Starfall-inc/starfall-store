@@ -1,140 +1,604 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
+<div id="orderManagement" class="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+    <!-- Page Title with Enhanced Animation -->
+    <h1 class="text-3xl font-bold mb-6 text-primary flex items-center animate__animated animate__fadeIn">
+        <i class="fas fa-box mr-3 animate__animated animate__bounceIn animate__delay-1s"></i>
+        <span>Order Management</span>
+    </h1>
 
-<div class="bg-white shadow-md rounded-lg p-4">
-    <h2 class="text-xl font-semibold text-gray-700 mb-4"><i class="fas fa-box  animate__animated animate__bounceIn animate__delay-1s"></i> Order Management</h2>
-
-    <!-- Tabs for different order statuses -->
-    <div class="flex space-x-4 border-b pb-2">
-        <button class="tab-button active" data-tab="pending"><i class="fas fa-clock animate__animated animate__bounceIn animate__delay-100ms"></i> Pending</button>
-        <button class="tab-button" data-tab="shipped"><i class="fas fa-truck animate__animated animate__bounceIn animate__delay-150ms"></i> Shipped</button>
-        <button class="tab-button" data-tab="delivered"><i class="fas fa-check-circle animate__animated animate__bounceIn animate__delay-200ms"></i> Delivered</button>
-        <button class="tab-button" data-tab="canceled"><i class="fas fa-times-circle animate__animated animate__bounceIn animate__delay-250ms"></i> Canceled</button>
+    <!-- Tab Navigation with Improved Effects -->
+    <div class="flex flex-wrap border-b mb-6">
+        <button id="tab-pending" class="px-4 py-3 font-semibold rounded-t-lg transition-all duration-300 hover:bg-opacity-20 hover:bg-primary border-b-2 border-primary bg-primary bg-opacity-10 text-primary">
+            <i class="fas fa-clock mr-2 animate__animated animate__bounceIn animate__delay-100ms"></i> Pending
+        </button>
+        <button id="tab-shipped" class="px-4 py-3 font-semibold rounded-t-lg transition-all duration-300 hover:bg-opacity-20 hover:bg-primary text-gray-600">
+            <i class="fas fa-truck mr-2 animate__animated animate__bounceIn animate__delay-150ms"></i> Shipped
+        </button>
+        <button id="tab-delivered" class="px-4 py-3 font-semibold rounded-t-lg transition-all duration-300 hover:bg-opacity-20 hover:bg-primary text-gray-600">
+            <i class="fas fa-check-circle mr-2 animate__animated animate__bounceIn animate__delay-200ms"></i> Delivered
+        </button>
+        <button id="tab-canceled" class="px-4 py-3 font-semibold rounded-t-lg transition-all duration-300 hover:bg-opacity-20 hover:bg-primary text-gray-600">
+            <i class="fas fa-times-circle mr-2 animate__animated animate__bounceIn animate__delay-250ms"></i> Canceled
+        </button>
     </div>
 
-    <!-- Search & Filter -->
-    <div class="flex items-center justify-between my-4">
-        <input type="text" id="search-orders" placeholder="Search orders..." class="px-3 py-2 border rounded-lg w-1/3">
-        <select id="sort-orders" class="px-3 py-2 border rounded-lg">
-            <option value="latest">Sort by Latest</option>
-            <option value="oldest">Sort by Oldest</option>
-            <option value="price_high">Price: High to Low</option>
-            <option value="price_low">Price: Low to High</option>
-        </select>
+    <!-- Search & Filter with improved design -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="relative col-span-2">
+            <input id="searchInput" type="text" placeholder="Search by order ID, date, or total..."
+                   class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+        <div>
+            <select id="sortSelect" class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
+                <option value="latest">Sort by Latest</option>
+                <option value="oldest">Sort by Oldest</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="price_low">Price: Low to High</option>
+            </select>
+        </div>
     </div>
 
-    <!-- Orders Table -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border rounded-lg shadow-md">
+    <!-- Orders Table with improved styling -->
+    <div class="relative overflow-x-auto rounded-lg shadow-md">
+        <table class="w-full text-left">
             <thead>
-            <tr class="bg-gray-100 text-left">
-                <th class="p-3">Order ID</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Total</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-center">Actions</th>
-            </tr>
+                <tr class="bg-primary bg-opacity-20 text-primary">
+                    <th class="p-4 font-medium rounded-tl-lg">Order ID</th>
+                    <th class="p-4 font-medium">Date</th>
+                    <th class="p-4 font-medium">Customer</th>
+                    <th class="p-4 font-medium">Total</th>
+                    <th class="p-4 font-medium">Status</th>
+                    <th class="p-4 font-medium rounded-tr-lg text-center">Actions</th>
+                </tr>
             </thead>
-            <tbody id="orders-table">
-            <!-- Orders will be dynamically injected here -->
+            <tbody id="ordersTableBody">
+                <!-- Orders will be populated here via JavaScript -->
             </tbody>
         </table>
     </div>
+
+    <!-- Empty state message -->
+    <div id="emptyState" class="p-8 text-center text-gray-500 hidden animate__animated animate__fadeIn">
+        <div class="flex flex-col items-center">
+            <i class="fas fa-box-open fa-3x mb-4 text-gray-300"></i>
+            <p class="text-lg">No orders found in this category.</p>
+            <button id="clearSearchBtn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all duration-300 hidden">
+                Clear Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Pagination with improved styling -->
+    <div class="flex justify-center mt-6">
+        <nav class="inline-flex rounded-md shadow-sm">
+            <a href="#" class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-primary hover:bg-opacity-10 hover:text-primary transition-all duration-300">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-primary bg-opacity-10 text-primary hover:bg-opacity-20 transition-all duration-300">1</a>
+            <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-primary hover:bg-opacity-10 hover:text-primary transition-all duration-300">2</a>
+            <a href="#" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-primary hover:bg-opacity-10 hover:text-primary transition-all duration-300">3</a>
+            <a href="#" class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-primary hover:bg-opacity-10 hover:text-primary transition-all duration-300">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div id="modalContent" class="bg-white p-6 rounded-lg w-full max-w-3xl animate__animated animate__fadeInDown shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-primary"><i class="fas fa-clipboard-list mr-2"></i>Order Details</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="orderDetailsContent" class="space-y-6">
+                <!-- Order details will be populated here via JavaScript -->
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Toast Notification Component -->
+<div id="toast" class="fixed bottom-4 right-4 bg-white px-6 py-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-500">
+    <div class="flex items-center">
+        <div id="toastIcon" class="mr-3 text-green-500">
+            <i class="fas fa-check-circle fa-lg"></i>
+        </div>
+        <div>
+            <p class="font-medium" id="toastMessage">Operation successful!</p>
+        </div>
+        <button onclick="hideToast()" class="ml-6 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Add Animation Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let ordersData = [];
+    // State management
+    const orderManagement = {
+        activeTab: 'pending',
+        searchQuery: '',
+        sortBy: 'latest',
+        ordersData: [],
+        filteredOrders: [],
+        selectedOrder: null,
+
+        // Initialize the application
+        init() {
+            this.fetchOrders();
+            this.setupEventListeners();
+            this.checkUrlParams();
+        },
+
+        // Set up all event listeners
+        setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('#tab-pending, #tab-shipped, #tab-delivered, #tab-canceled').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    this.setActiveTab(tab.id.split('-')[1]);
+                });
+            });
+
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                this.searchQuery = e.target.value;
+                this.filterOrders();
+            });
+
+            // Sort select
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                this.sortBy = e.target.value;
+                this.sortOrders();
+                this.renderOrders();
+            });
+
+            // Clear search button
+            document.getElementById('clearSearchBtn').addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                this.searchQuery = '';
+                this.filterOrders();
+            });
+
+            // Close modal button
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                this.closeDetailModal();
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('orderDetailModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('orderDetailModal')) {
+                    this.closeDetailModal();
+                }
+            });
+        },
+
+        // Check URL parameters for toast messages
+        checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            const type = urlParams.get('type') || 'success';
+
+            if (message) {
+                showToast(message, type);
+            }
+        },
+
+        // Set active tab and update UI
+        setActiveTab(tabName) {
+            this.activeTab = tabName;
+
+            // Update tab UI
+            document.querySelectorAll('#tab-pending, #tab-shipped, #tab-delivered, #tab-canceled').forEach(tab => {
+                const tabId = tab.id.split('-')[1];
+                if (tabId === tabName) {
+                    tab.classList.add('border-b-2', 'border-primary', 'bg-primary', 'bg-opacity-10', 'text-primary');
+                    tab.classList.remove('text-gray-600');
+                } else {
+                    tab.classList.remove('border-b-2', 'border-primary', 'bg-primary', 'bg-opacity-10', 'text-primary');
+                    tab.classList.add('text-gray-600');
+                }
+            });
+
+            this.filterOrders();
+        },
 
         // Fetch orders from API
-        async function fetchOrders() {
-            const response = await fetch("/api/admin/order");
-            ordersData = await response.json();
-            renderOrders("Paid");
-        }
+        async fetchOrders() {
+            try {
+                const response = await fetch('/api/admin/order');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+                this.ordersData = await response.json();
+                this.filterOrders();
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                showToast('Failed to load orders. Please try again.', 'error');
+            }
+        },
 
-        // Render orders based on tab selection
-        function renderOrders(status) {
-            const tableBody = document.getElementById("orders-table");
-            tableBody.innerHTML = "";
+        // Filter orders based on active tab and search query
+        filterOrders() {
+            const query = this.searchQuery.toLowerCase();
+            this.filteredOrders = this.ordersData.filter(order => {
+                // Match by status tab
+                if (order.status.toLowerCase() !== this.activeTab.toLowerCase()) {
+                    return false;
+                }
 
-            const filteredOrders = ordersData.filter(order => order.status === status);
-            filteredOrders.forEach(order => {
-                tableBody.innerHTML += `
-                <tr class="border-b">
-                    <td class="p-3">${order.id}</td>
-                    <td class="p-3">${new Date(order.order_place_date).toLocaleDateString()}</td>
-                    <td class="p-3">₹${order.total}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded-lg text-white ${getStatusClass(order.status)}">
+                // Match by search query
+                return order.id.toString().includes(query) ||
+                       new Date(order.order_place_date).toLocaleDateString().includes(query) ||
+                       order.total.toString().includes(query) ||
+                       (order.customer_name && order.customer_name.toLowerCase().includes(query));
+            });
+
+            this.sortOrders();
+            this.renderOrders();
+        },
+
+        // Sort orders based on selected sort option
+        sortOrders() {
+            switch(this.sortBy) {
+                case 'latest':
+                    this.filteredOrders.sort((a, b) => new Date(b.order_place_date) - new Date(a.order_place_date));
+                    break;
+                case 'oldest':
+                    this.filteredOrders.sort((a, b) => new Date(a.order_place_date) - new Date(b.order_place_date));
+                    break;
+                case 'price_high':
+                    this.filteredOrders.sort((a, b) => b.total - a.total);
+                    break;
+                case 'price_low':
+                    this.filteredOrders.sort((a, b) => a.total - b.total);
+                    break;
+            }
+        },
+
+        // Render orders to the table
+        renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+            // Show/hide empty state
+            if (this.filteredOrders.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+
+                // Show clear search button if there's a search query
+                if (this.searchQuery) {
+                    clearSearchBtn.classList.remove('hidden');
+                } else {
+                    clearSearchBtn.classList.add('hidden');
+                }
+            } else {
+                emptyState.classList.add('hidden');
+
+                // Generate table rows
+                tbody.innerHTML = this.filteredOrders.map((order, index) => {
+                    const bgClass = index % 2 === 0 ? 'bg-gray-50' : '';
+                    const statusClass = this.getStatusClass(order.status);
+
+                    return `
+                        <tr class="border-t hover:bg-primary hover:bg-opacity-5 transition-all duration-200 animate__animated animate__fadeIn ${bgClass}">
+                            <td class="p-4 font-medium">#${order.id}</td>
+                            <td class="p-4">${new Date(order.order_place_date).toLocaleDateString()}</td>
+                            <td class="p-4">${order.customer_name || 'Customer ' + order.customer_id}</td>
+                            <td class="p-4 font-medium">₹${order.total}</td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 text-white rounded-full text-xs font-medium ${statusClass}">
+                                    ${order.status}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex justify-center space-x-2">
+                                    <button onclick="orderManagement.viewOrderDetails(${order.id})" class="text-blue-500 hover:text-blue-700 transition-colors duration-300 p-1 rounded-full hover:bg-blue-100">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                    ${this.activeTab === 'pending' ? `
+                                        <button onclick="orderManagement.updateOrderStatus(${order.id}, 'Shipped')" class="text-blue-500 hover:text-blue-700 transition-colors duration-300 p-1 rounded-full hover:bg-blue-100">
+                                            <i class="fas fa-truck"></i>
+                                        </button>
+
+                                        <button onclick="orderManagement.cancelOrder(${order.id})" class="text-red-500 hover:text-red-700 transition-colors duration-300 p-1 rounded-full hover:bg-red-100">
+                                            <i class="fas fa-times-circle"></i>
+                                        </button>
+                                    ` : ''}
+
+                                    ${this.activeTab === 'shipped' ? `
+                                        <button onclick="orderManagement.updateOrderStatus(${order.id}, 'Delivered')" class="text-green-500 hover:text-green-700 transition-colors duration-300 p-1 rounded-full hover:bg-green-100">
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        },
+
+        // View order details
+        viewOrderDetails(orderId) {
+            const order = this.ordersData.find(o => o.id === orderId);
+            if (!order) return;
+
+            this.selectedOrder = order;
+            this.renderOrderDetails();
+            document.getElementById('orderDetailModal').classList.remove('hidden');
+        },
+
+        // Close detail modal
+        closeDetailModal() {
+            document.getElementById('orderDetailModal').classList.add('hidden');
+            this.selectedOrder = null;
+        },
+
+        // Render order details in modal
+        renderOrderDetails() {
+            if (!this.selectedOrder) return;
+
+            const order = this.selectedOrder;
+            const detailsContainer = document.getElementById('orderDetailsContent');
+
+            detailsContainer.innerHTML = `
+                <!-- Order Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-gray-500">Order ID</p>
+                        <p class="font-semibold">#${order.id}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Date Placed</p>
+                        <p class="font-semibold">${new Date(order.order_place_date).toLocaleString()}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Status</p>
+                        <span class="px-3 py-1 text-white rounded-full text-xs font-medium ${this.getStatusClass(order.status)}">
                             ${order.status}
                         </span>
-                    </td>
-                    <td class="p-3 text-center">
-                        <button onclick="viewOrder(${order.id})" class="text-blue-500"><i class="fas fa-eye"></i></button>
-                        ${order.status === "pending" ? `<button onclick="cancelOrder(${order.id})" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>` : ""}
-                    </td>
-                </tr>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Payment Method</p>
+                        <p class="font-semibold">${order.payment_method || 'Online Payment'}</p>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="p-4 border rounded-lg">
+                    <h4 class="font-semibold text-lg mb-2"><i class="fas fa-user mr-2 text-primary"></i>Customer Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-gray-500">Name</p>
+                            <p class="font-semibold">${order.customer_name || 'Customer ' + order.customer_id}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Email</p>
+                            <p class="font-semibold">${order.customer_email || 'Not Available'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Phone</p>
+                            <p class="font-semibold">${order.customer_phone || 'Not Available'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="p-4 border rounded-lg">
+                    <h4 class="font-semibold text-lg mb-2"><i class="fas fa-shipping-fast mr-2 text-primary"></i>Shipping Details</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <p class="text-gray-500">Address</p>
+                            <p class="font-semibold">${order.shipping_address || 'Not Available'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">City</p>
+                            <p class="font-semibold">${order.shipping_city || 'Not Available'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Zip Code</p>
+                            <p class="font-semibold">${order.shipping_zip || 'Not Available'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="border rounded-lg overflow-hidden">
+                    <h4 class="font-semibold text-lg p-4 bg-gray-50"><i class="fas fa-shopping-cart mr-2 text-primary"></i>Order Items</h4>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 text-left">Product</th>
+                                <th class="p-3 text-left">Quantity</th>
+                                <th class="p-3 text-left">Price</th>
+                                <th class="p-3 text-left">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items && order.items.length > 0 ?
+                                order.items.map(item => `
+                                    <tr class="border-t">
+                                        <td class="p-3">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 mr-3 bg-gray-200 rounded overflow-hidden">
+                                                    <img src="${item.product_image || '/static/placeholder.png'}" class="w-full h-full object-cover">
+                                                </div>
+                                                <span>${item.product_name || ('Product #' + item.product_id)}</span>
+                                            </div>
+                                        </td>
+                                        <td class="p-3">${item.quantity}</td>
+                                        <td class="p-3">₹${item.price}</td>
+                                        <td class="p-3 font-medium">₹${item.price * item.quantity}</td>
+                                    </tr>
+                                `).join('') :
+                                '<tr><td colspan="4" class="p-4 text-center text-gray-500">No items available</td></tr>'
+                            }
+                        </tbody>
+                        <tfoot class="bg-gray-50">
+                            <tr class="border-t">
+                                <td colspan="3" class="p-3 text-right font-semibold">Subtotal:</td>
+                                <td class="p-3 font-semibold">₹${order.subtotal || order.total}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="p-3 text-right font-semibold">Shipping:</td>
+                                <td class="p-3 font-semibold">₹${order.shipping_cost || '0'}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="p-3 text-right font-semibold">Tax:</td>
+                                <td class="p-3 font-semibold">₹${order.tax || '0'}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="p-3 text-right font-bold text-lg">Grand Total:</td>
+                                <td class="p-3 font-bold text-lg">₹${order.total}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-3">
+                    <button onclick="orderManagement.closeDetailModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300">
+                        Close
+                    </button>
+
+                    ${order.status.toLowerCase() === 'pending' ? `
+                        <button onclick="orderManagement.updateOrderStatus(${order.id}, 'Shipped'); orderManagement.closeDetailModal()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300">
+                            <i class="fas fa-truck mr-2"></i>Mark as Shipped
+                        </button>
+
+                        <button onclick="orderManagement.cancelOrder(${order.id}); orderManagement.closeDetailModal()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300">
+                            <i class="fas fa-times-circle mr-2"></i>Cancel Order
+                        </button>
+                    ` : ''}
+
+                    ${order.status.toLowerCase() === 'shipped' ? `
+                        <button onclick="orderManagement.updateOrderStatus(${order.id}, 'Delivered'); orderManagement.closeDetailModal()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300">
+                            <i class="fas fa-check-circle mr-2"></i>Mark as Delivered
+                        </button>
+                    ` : ''}
+
+                    <button onclick="window.location.href='/admin/order/print/${order.id}'" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-all duration-300">
+                        <i class="fas fa-print mr-2"></i>Print Invoice
+                    </button>
+                </div>
             `;
-            });
-        }
+        },
 
-        // Handle Tab Clicks
-        document.querySelectorAll(".tab-button").forEach(button => {
-            button.addEventListener("click", function () {
-                document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-                renderOrders(this.dataset.tab);
-            });
-        });
+        // Update order status
+        async updateOrderStatus(orderId, newStatus) {
+            if (!confirm(`Are you sure you want to update this order to ${newStatus}?`)) return;
 
-        // Search Functionality
-        document.getElementById("search-orders").addEventListener("input", function () {
-            const searchTerm = this.value.toLowerCase();
-            const tableRows = document.querySelectorAll("#orders-table tr");
-            tableRows.forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? "" : "none";
-            });
-        });
+            try {
+                const response = await fetch(`/api/admin/order/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
 
-        // Cancel Order API Call
-        async function cancelOrder(orderId) {
+                if (!response.ok) {
+                    throw new Error('Failed to update order status');
+                }
+
+                await this.fetchOrders();
+                showToast(`Order #${orderId} status updated to ${newStatus}`, 'success');
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                showToast('Failed to update order status. Please try again.', 'error');
+            }
+        },
+
+        // Cancel order
+        async cancelOrder(orderId) {
             if (!confirm("Are you sure you want to cancel this order?")) return;
-            await fetch(`/api/admin/order/${orderId}/cancel`, { method: "PUT" });
-            fetchOrders();
-        }
 
-        // View Order Details
-        function viewOrder(orderId) {
-            window.location.href = `/order/${orderId}`;
-        }
+            try {
+                const response = await fetch(`/api/admin/order/${orderId}/cancel`, {
+                    method: 'PUT'
+                });
 
-        // Get Status Color Class
-        function getStatusClass(status) {
+                if (!response.ok) {
+                    throw new Error('Failed to cancel order');
+                }
+
+                await this.fetchOrders();
+                showToast(`Order #${orderId} has been canceled`, 'success');
+            } catch (error) {
+                console.error('Error canceling order:', error);
+                showToast('Failed to cancel order. Please try again.', 'error');
+            }
+        },
+
+        // Get CSS class for status badge
+        getStatusClass(status) {
             return {
                 "pending": "bg-yellow-500",
                 "shipped": "bg-blue-500",
                 "delivered": "bg-green-500",
                 "canceled": "bg-red-500"
-            }[status] || "bg-gray-500";
+            }[status.toLowerCase()] || "bg-gray-500";
+        }
+    };
+
+    // Toast notification functions
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        toastMessage.innerText = message;
+
+        // Change icon and color based on type
+        if (type === 'success') {
+            toast.classList.add('border-l-4', 'border-green-500');
+            toastIcon.classList.add('text-green-500');
+            toastIcon.classList.remove('text-red-500');
+            toastIcon.querySelector('i').classList.add('fa-check-circle');
+            toastIcon.querySelector('i').classList.remove('fa-exclamation-circle');
+        } else {
+            toast.classList.add('border-l-4', 'border-red-500');
+            toastIcon.classList.add('text-red-500');
+            toastIcon.classList.remove('text-green-500');
+            toastIcon.querySelector('i').classList.add('fa-exclamation-circle');
+            toastIcon.querySelector('i').classList.remove('fa-check-circle');
         }
 
-        fetchOrders();
+        // Show toast with animation
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100', 'animate__animated', 'animate__fadeInUp');
+
+        // Hide toast after 5 seconds
+        setTimeout(hideToast, 5000);
+    }
+
+    function hideToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.remove('animate__fadeInUp');
+        toast.classList.add('animate__fadeOutDown');
+
+        // Reset after animation completes
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100', 'animate__animated', 'animate__fadeOutDown');
+        }, 500);
+    }
+
+    // Initialize the app when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make orderManagement globally accessible for onclick handlers
+        window.orderManagement = orderManagement;
+        orderManagement.init();
     });
 </script>
-
-<style>
-    .tab-button {
-        padding: 8px 16px;
-        border-bottom: 2px solid transparent;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .tab-button.active {
-        border-bottom-color: #e53e3e;
-        font-weight: bold;
-    }
-</style>
-
 {% endblock %}
