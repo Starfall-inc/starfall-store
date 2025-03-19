@@ -98,7 +98,8 @@ def create_product():
             weight=weight,
             tags=[tag.strip() for tag in tags],
             images=image_files,
-            is_featured=is_featured
+            is_featured=is_featured,
+            app = current_app #pass the current app.
         )
 
         if status == 201 and is_featured:
@@ -156,7 +157,7 @@ def update_product():
         # Handle image update
         if "image" in request.files and request.files["image"].filename:
             image_file = request.files["image"]
-            image_urls = ProductManager.upload_images(product.id, [image_file])
+            image_urls = ProductManager.upload_images(product.id, [image_file], current_app) #pass current_app
             if image_urls:
                 # Update first image or add new one
                 if product.images:
@@ -177,14 +178,12 @@ def update_product():
         seraphina.error(f"Error updating product: {str(e)}")
         return redirect(url_for('product_api.admin_products_page') + "?message=Failed to update product&type=error")
 
-
 # API: Delete product
 @product_bp.route("/admin/product/delete/<int:product_id>", methods=["GET"])
 def delete_product(product_id):
     try:
         product = Product.query.get_or_404(product_id)
-        db.session.delete(product)
-        db.session.commit()
+        ProductManager.delete_product(product.id,current_app)
 
         # Clear caches
         clear_cache([f"product_{product_id}", "admin_all_products", "featured_products"])

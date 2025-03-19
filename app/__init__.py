@@ -2,7 +2,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from app.Seraphina import Seraphina
 from app.config import config
-from app.extensions import admin_db, db, seraphina, init_seraphina, init_redis, init_cache, oauth, init_oauth
+from app.extensions import admin_db, db, seraphina, init_seraphina, init_redis, init_cache, oauth, init_oauth, \
+    init_minio
 from app.utils.template_utils import format_price
 import os
 from sqlalchemy import inspect
@@ -44,6 +45,9 @@ def create_app():
 
     # ✅ Initialize OAuth Providers (Google, Facebook, etc.)
     init_oauth(app)
+
+    # Init Minio
+    init_minio(app)
 
     # ✅ Store enabled OAuth providers dynamically
     global ENABLED_OAUTH_PROVIDERS

@@ -88,7 +88,7 @@ def delete_product(product_id):
     db.session.delete(product)
     db.session.commit()
     flash("Product deleted successfully!", "success")
-    return redirect(url_for("admin.manage_products"))
+    return redirect(url_for("admin_static.manage_products"))
 
 
 @admin_static_routes_bp.route("/product/edit/<int:product_id>", methods=["POST"])

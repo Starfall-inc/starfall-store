@@ -20,11 +20,11 @@ def confirm_password_hash(hashed_password, password):
 
 
 # Example usage
-hashed_pw = hash_password("MySecurePassword")
-print("Hashed Password:", hashed_pw)
-
-# Confirm password
-if confirm_password_hash(hashed_pw, "MySecurePassword"):
-    print("✅ Password matches!")
-else:
-    print("❌ Incorrect password!")
+# hashed_pw = hash_password("MySecurePassword")
+# print("Hashed Password:", hashed_pw)
+#
+# # Confirm password
+# if confirm_password_hash(hashed_pw, "MySecurePassword"):
+#     print("✅ Password matches!")
+# else:
+#     print("❌ Incorrect password!")

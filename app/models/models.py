@@ -190,7 +190,7 @@ class OrderDetail(db.Model):
 
 class FeaturedProduct(db.Model):
     __tablename__ = 'featured_product'
-    id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='CASCADE'), primary_key=True)
     from_date = db.Column('from', db.TIMESTAMP, nullable=False)
     to_date = db.Column('to', db.TIMESTAMP, nullable=False)
 
@@ -276,7 +276,7 @@ class Session(db.Model):
 class Banner(db.Model):
     __tablename__ = 'banners'
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(255), nullable=False)  # Image path or URL
+    image_url = db.Column(db.String(255), nullable=True)  # Image path or URL
     title = db.Column(db.String(255), nullable=True)  # Optional banner title
     description = db.Column(db.Text, nullable=True)  # Optional description
     link = db.Column(db.String(255), nullable=True)  # Clickable link (optional)
