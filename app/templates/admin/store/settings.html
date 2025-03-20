@@ -1,0 +1,933 @@
+{% extends 'admin/base.html' %}
+{% block title %}Store Settings{% endblock %}
+
+{% block content %}
+<div class="flex h-full">
+    <!-- Settings Sidebar -->
+    <div class="w-64 bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="p-4 bg-primary text-white">
+            <h2 class="text-xl font-bold">Store Configuration</h2>
+        </div>
+        <nav class="p-2">
+            <ul>
+                <li>
+                    <button onclick="showSection('general')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button active-section" id="general-btn">
+                        <i class="fas fa-store w-5 mr-2"></i> General
+                    </button>
+                </li>
+                <li>
+                    <button onclick="showSection('theme')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button" id="theme-btn">
+                        <i class="fas fa-palette w-5 mr-2"></i> Theme
+                    </button>
+                </li>
+                <li>
+                    <button onclick="showSection('payment')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button" id="payment-btn">
+                        <i class="fas fa-credit-card w-5 mr-2"></i> Payment
+                    </button>
+                </li>
+                <li>
+                    <button onclick="showSection('shipping')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button" id="shipping-btn">
+                        <i class="fas fa-truck w-5 mr-2"></i> Shipping
+                    </button>
+                </li>
+                <li>
+                    <button onclick="showSection('oauth')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button" id="oauth-btn">
+                        <i class="fas fa-key w-5 mr-2"></i> OAuth
+                    </button>
+                </li>
+                <li>
+                    <button onclick="showSection('advanced')" class="w-full text-left p-2 my-1 rounded hover:bg-gray-100 flex items-center section-button" id="advanced-btn">
+                        <i class="fas fa-cogs w-5 mr-2"></i> Advanced
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Settings Content -->
+    <div class="flex-1 ml-4">
+        <!-- Live Preview -->
+        <div class="bg-white p-4 mb-4 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">Live Preview</h3>
+            <div class="border rounded p-4 flex items-center" id="live-preview">
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-3">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-base" id="preview-store-name">SakuraMart</h4>
+                    <p class="text-sm text-gray-600" id="preview-store-email">support@sakuramart.jp</p>
+                </div>
+                <div class="ml-auto">
+                    <button class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 rounded">
+                        Shop Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- General Settings Section -->
+        <div id="general-section" class="section-content bg-white p-6 rounded-lg shadow-md animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">General Settings</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-name">
+                        Store Name
+                    </label>
+                    <input id="store-name" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="SakuraMart">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-email">
+                        Store Email
+                    </label>
+                    <input id="store-email" type="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="support@sakuramart.jp">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-phone">
+                        Phone Number
+                    </label>
+                    <input id="store-phone" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="098-765-4321">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-address">
+                        Address
+                    </label>
+                    <input id="store-address" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="123 Sakura St, Tokyo, Japan, 100-0001">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-currency">
+                        Currency
+                    </label>
+                    <select id="store-currency" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="INR" selected>INR (₹)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="JPY">JPY (¥)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="store-tax">
+                        Tax Rate (%)
+                    </label>
+                    <input id="store-tax" type="number" min="0" max="100" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="8">
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button onclick="saveGeneralSettings()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme Settings Section -->
+        <div id="theme-section" class="section-content bg-white p-6 rounded-lg shadow-md hidden animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">Theme Settings</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="primary-color">
+                        Primary Color
+                    </label>
+                    <div class="flex items-center">
+                        <input id="primary-color" type="color" class="h-10 w-10 mr-2" value="#FFC0CB">
+                        <input type="text" id="primary-color-hex" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="#FFC0CB">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="secondary-color">
+                        Secondary Color
+                    </label>
+                    <div class="flex items-center">
+                        <input id="secondary-color" type="color" class="h-10 w-10 mr-2" value="#FF69B4">
+                        <input type="text" id="secondary-color-hex" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="#FF69B4">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="text-color">
+                        Text Color
+                    </label>
+                    <div class="flex items-center">
+                        <input id="text-color" type="color" class="h-10 w-10 mr-2" value="#4A4A4A">
+                        <input type="text" id="text-color-hex" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="#4A4A4A">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="background-color">
+                        Background Color
+                    </label>
+                    <div class="flex items-center">
+                        <input id="background-color" type="color" class="h-10 w-10 mr-2" value="#FFF0F5">
+                        <input type="text" id="background-color-hex" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="#FFF0F5">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dark-color">
+                        Dark Color
+                    </label>
+                    <div class="flex items-center">
+                        <input id="dark-color" type="color" class="h-10 w-10 mr-2" value="#8B0000">
+                        <input type="text" id="dark-color-hex" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="#8B0000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button onclick="saveThemeSettings()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Payment Settings Section -->
+        <div id="payment-section" class="section-content bg-white p-6 rounded-lg shadow-md hidden animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">Payment Settings</h3>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="payment-provider">
+                        Payment Provider
+                    </label>
+                    <select id="payment-provider" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="razorpay" selected>Razorpay</option>
+                        <option value="stripe">Stripe</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="razorpay-key-id">
+                        Razorpay Key ID
+                    </label>
+                    <input id="razorpay-key-id" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="rzp_test_1spjwNo3F7F9QF">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="razorpay-key-secret">
+                        Razorpay Key Secret
+                    </label>
+                    <input id="razorpay-key-secret" type="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="KAwD3QGTOURlUNKygkScWzif">
+                    <p class="text-xs text-gray-500 mt-1">This value is stored securely in your environment variables.</p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sandbox-url">
+                        Sandbox URL
+                    </label>
+                    <input id="sandbox-url" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="https://api.razorpay.com/v1/">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="production-url">
+                        Production URL
+                    </label>
+                    <input id="production-url" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="https://api.razorpay.com/v1/">
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button onclick="savePaymentSettings()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Shipping Settings Section -->
+        <div id="shipping-section" class="section-content bg-white p-6 rounded-lg shadow-md hidden animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">Shipping Settings</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="shipping-cost">
+                        Standard Shipping Cost
+                    </label>
+                    <div class="flex items-center">
+                        <span class="mr-2">₹</span>
+                        <input id="shipping-cost" type="number" min="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="500">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="free-shipping-threshold">
+                        Free Shipping Threshold
+                    </label>
+                    <div class="flex items-center">
+                        <span class="mr-2">₹</span>
+                        <input id="free-shipping-threshold" type="number" min="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="5000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button onclick="saveShippingSettings()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- OAuth Settings Section -->
+        <div id="oauth-section" class="section-content bg-white p-6 rounded-lg shadow-md hidden animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">OAuth Settings</h3>
+
+            <div class="mb-6">
+                <h4 class="font-semibold mb-2">Google OAuth</h4>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="google-client-id">
+                            Google Client ID
+                        </label>
+                        <input id="google-client-id" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="<>">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="google-client-secret">
+                            Google Client Secret
+                        </label>
+                        <input id="google-client-secret" type="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="<>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="font-semibold mb-2">Facebook OAuth</h4>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="facebook-client-id">
+                            Facebook Client ID
+                        </label>
+                        <input id="facebook-client-id" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="your-facebook-client-id">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="facebook-client-secret">
+                            Facebook Client Secret
+                        </label>
+                        <input id="facebook-client-secret" type="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="your-facebook-client-secret">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button onclick="saveOAuthSettings()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Settings Section -->
+        <div id="advanced-section" class="section-content bg-white p-6 rounded-lg shadow-md hidden animate__animated animate__fadeIn">
+            <h3 class="text-xl font-bold mb-4">Advanced Settings</h3>
+
+            <div class="mb-6">
+                <h4 class="font-semibold mb-2">JSON Configuration</h4>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="json-config">
+                        Edit JSON Configuration
+                    </label>
+                    <textarea id="json-config" rows="10" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline font-mono text-sm" style="white-space: pre;"></textarea>
+                </div>
+                <p class="text-xs text-gray-500">Note: Editing the JSON directly can lead to configuration errors. Use with caution.</p>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between">
+                    <button onclick="validateJson()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Validate JSON
+                    </button>
+                    <button onclick="saveJsonConfig()" class="bg-primary hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Save JSON
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t pt-4 mt-4">
+                <h4 class="font-semibold mb-2">Danger Zone</h4>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h5 class="font-medium text-red-600">Reset to Default</h5>
+                        <p class="text-sm text-gray-500">This will reset all settings to default values</p>
+                    </div>
+                    <button onclick="resetToDefaults()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Messages -->
+<div id="toast" class="fixed top-4 right-4 px-4 py-2 rounded shadow-lg hidden animate__animated animate__fadeIn z-50">
+    <div class="flex items-center">
+        <i id="toast-icon" class="fas fa-check-circle mr-2"></i>
+        <span id="toast-message"></span>
+    </div>
+</div>
+
+<script>
+    // Store configuration data
+    let storeConfig = {
+        shop: {
+            shop_domain: "https://sakuramart-dev.sangonomiya.icu",
+            name: "SakuraMart",
+            email: "support@sakuramart.jp",
+            phone: "098-765-4321",
+            address: "123 Sakura St, Tokyo, Japan, 100-0001",
+            currency: "INR",
+            currency_symbol: "₹",
+            tax: 0.08,
+            shipping: 500,
+            free_shipping: 5000,
+            logo: "sakura-logo.png",
+            favicon: "sakura-favicon.ico",
+            theme: {
+                primary: "#FFC0CB",
+                secondary: "#FF69B4",
+                text: "#4A4A4A",
+                background: "#FFF0F5",
+                dark: "#8B0000"
+            },
+            payment: {
+                provider: "razorpay",
+                sandbox_url: "https://api.razorpay.com/v1/",
+                production_url: "https://api.razorpay.com/v1/"
+            }
+        }
+    };
+
+    // Environment variables
+    let envVariables = {
+        RAZORPAY_KEY_ID: "<>",
+        RAZORPAY_KEY_SECRET: "<>",
+        GOOGLE_CLIENT_ID: "<>",
+        GOOGLE_CLIENT_SECRET: "<>",
+        FACEBOOK_CLIENT_ID: "your-facebook-client-id",
+        FACEBOOK_CLIENT_SECRET: "your-facebook-client-secret"
+    };
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update JSON editor
+        document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+        // Connect color inputs with hex inputs
+        connectColorInputs();
+
+        // Initialize preview
+        updateLivePreview();
+    });
+
+    // Connect color inputs with hex inputs
+    function connectColorInputs() {
+        const colorInputs = [
+            { color: 'primary-color', hex: 'primary-color-hex' },
+            { color: 'secondary-color', hex: 'secondary-color-hex' },
+            { color: 'text-color', hex: 'text-color-hex' },
+            { color: 'background-color', hex: 'background-color-hex' },
+            { color: 'dark-color', hex: 'dark-color-hex' }
+        ];
+
+        colorInputs.forEach(item => {
+            const colorInput = document.getElementById(item.color);
+            const hexInput = document.getElementById(item.hex);
+
+            colorInput.addEventListener('input', function() {
+                hexInput.value = this.value;
+                updateLivePreview();
+            });
+
+            hexInput.addEventListener('input', function() {
+                // Validate hex color
+                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                    colorInput.value = this.value;
+                    updateLivePreview();
+                }
+            });
+        });
+    }
+
+    // Show section
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.section-content').forEach(section => {
+            section.classList.add('hidden');
+        });
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.section-button').forEach(button => {
+            button.classList.remove('bg-gray-100', 'active-section');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId + '-section').classList.remove('hidden');
+
+        // Add active class to button
+        document.getElementById(sectionId + '-btn').classList.add('bg-gray-100', 'active-section');
+    }
+
+    // Update live preview
+    function updateLivePreview() {
+        const primaryColor = document.getElementById('primary-color')?.value || storeConfig.shop.theme.primary;
+        const storeName = document.getElementById('store-name')?.value || storeConfig.shop.name;
+        const storeEmail = document.getElementById('store-email')?.value || storeConfig.shop.email;
+
+        const preview = document.getElementById('live-preview');
+        const previewStoreName = document.getElementById('preview-store-name');
+        const previewStoreEmail = document.getElementById('preview-store-email');
+
+        // Update values
+        previewStoreName.textContent = storeName;
+        previewStoreEmail.textContent = storeEmail;
+
+        // Update styles
+        document.querySelectorAll('#live-preview .bg-primary').forEach(el => {
+            el.style.backgroundColor = primaryColor;
+        });
+
+        document.querySelectorAll('#live-preview button').forEach(button => {
+            button.style.backgroundColor = primaryColor;
+        });
+    }
+
+    // Show toast message
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+
+        toastMessage.textContent = message;
+
+        if (type === 'success') {
+            toast.classList.remove('bg-red-500');
+            toast.classList.add('bg-green-500', 'text-white');
+            toastIcon.className = 'fas fa-check-circle mr-2';
+        } else {
+            toast.classList.remove('bg-green-500');
+            toast.classList.add('bg-red-500', 'text-white');
+            toastIcon.className = 'fas fa-exclamation-circle mr-2';
+        }
+
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('animate__fadeOut');
+            }, 500);
+        }, 3000);
+    }
+
+    // Save general settings
+    function saveGeneralSettings() {
+        const name = document.getElementById('store-name').value;
+        const email = document.getElementById('store-email').value;
+        const phone = document.getElementById('store-phone').value;
+        const address = document.getElementById('store-address').value;
+        const currency = document.getElementById('store-currency').value;
+        const tax = parseFloat(document.getElementById('store-tax').value) / 100;
+
+        // Update config
+        storeConfig.shop.name = name;
+        storeConfig.shop.email = email;
+        storeConfig.shop.phone = phone;
+        storeConfig.shop.address = address;
+        storeConfig.shop.currency = currency;
+        storeConfig.shop.tax = tax;
+
+        // Determine currency symbol
+        const currencySymbols = {
+            'INR': '₹',
+            'USD': '$',
+            'EUR': '€',
+            'JPY': '¥'
+        };
+        storeConfig.shop.currency_symbol = currencySymbols[currency] || '$';
+
+        // Update JSON editor
+        document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+        // Update API
+        fetch('/admin/settings/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                key_path: "shop",
+                new_value: storeConfig.shop
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast('General settings saved successfully');
+            updateLivePreview();
+        })
+        .catch(error => {
+            showToast('Error saving settings', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+// Save theme settings
+    function saveThemeSettings() {
+        const primary = document.getElementById('primary-color-hex').value;
+        const secondary = document.getElementById('secondary-color-hex').value;
+        const text = document.getElementById('text-color-hex').value;
+        const background = document.getElementById('background-color-hex').value;
+        const dark = document.getElementById('dark-color-hex').value;
+
+        // Update config
+        storeConfig.shop.theme = {
+            primary,
+            secondary,
+            text,
+            background,
+            dark
+        };
+
+        // Update JSON editor
+        document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+        // Update API
+        fetch('/admin/theme', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                primary,
+                secondary,
+                text,
+                background,
+                dark
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast('Theme settings saved successfully');
+            updateLivePreview();
+        })
+        .catch(error => {
+            showToast('Error saving theme settings', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Save payment settings
+    function savePaymentSettings() {
+        const provider = document.getElementById('payment-provider').value;
+        const sandboxUrl = document.getElementById('sandbox-url').value;
+        const productionUrl = document.getElementById('production-url').value;
+        const razorpayKeyId = document.getElementById('razorpay-key-id').value;
+        const razorpayKeySecret = document.getElementById('razorpay-key-secret').value;
+
+        // Update config
+        storeConfig.shop.payment = {
+            provider,
+            sandbox_url: sandboxUrl,
+            production_url: productionUrl
+        };
+
+        // Update JSON editor
+        document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+        // Update payment settings in config
+        fetch('/admin/payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                provider,
+                sandbox_url: sandboxUrl,
+                production_url: productionUrl
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update Razorpay keys in environment variables
+            return fetch('/admin/env/razorpay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key_id: razorpayKeyId,
+                    key_secret: razorpayKeySecret
+                })
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update environment variables
+            envVariables.RAZORPAY_KEY_ID = razorpayKeyId;
+            envVariables.RAZORPAY_KEY_SECRET = razorpayKeySecret;
+
+            showToast('Payment settings saved successfully');
+        })
+        .catch(error => {
+            showToast('Error saving payment settings', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Save shipping settings
+    function saveShippingSettings() {
+        const shippingCost = parseFloat(document.getElementById('shipping-cost').value);
+        const freeShippingThreshold = parseFloat(document.getElementById('free-shipping-threshold').value);
+
+        // Update config
+        storeConfig.shop.shipping = shippingCost;
+        storeConfig.shop.free_shipping = freeShippingThreshold;
+
+        // Update JSON editor
+        document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+        // Update API
+        fetch('/admin/settings/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                key_path: "shop.shipping",
+                new_value: shippingCost
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            return fetch('/admin/settings/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key_path: "shop.free_shipping",
+                    new_value: freeShippingThreshold
+                })
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast('Shipping settings saved successfully');
+        })
+        .catch(error => {
+            showToast('Error saving shipping settings', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Save OAuth settings
+    function saveOAuthSettings() {
+        const googleClientId = document.getElementById('google-client-id').value;
+        const googleClientSecret = document.getElementById('google-client-secret').value;
+        const facebookClientId = document.getElementById('facebook-client-id').value;
+        const facebookClientSecret = document.getElementById('facebook-client-secret').value;
+
+        // Update environment variables
+        fetch('/admin/env/google', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: googleClientId,
+                client_secret: googleClientSecret
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            return fetch('/admin/env/facebook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: facebookClientId,
+                    client_secret: facebookClientSecret
+                })
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update environment variables
+            envVariables.GOOGLE_CLIENT_ID = googleClientId;
+            envVariables.GOOGLE_CLIENT_SECRET = googleClientSecret;
+            envVariables.FACEBOOK_CLIENT_ID = facebookClientId;
+            envVariables.FACEBOOK_CLIENT_SECRET = facebookClientSecret;
+
+            showToast('OAuth settings saved successfully');
+        })
+        .catch(error => {
+            showToast('Error saving OAuth settings', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Validate JSON
+    function validateJson() {
+        try {
+            const jsonString = document.getElementById('json-config').value;
+            JSON.parse(jsonString);
+            showToast('JSON is valid');
+            return true;
+        } catch (error) {
+            showToast('Invalid JSON: ' + error.message, 'error');
+            console.error('Invalid JSON:', error);
+            return false;
+        }
+    }
+
+    // Save JSON config
+    function saveJsonConfig() {
+        if (validateJson()) {
+            try {
+                const jsonString = document.getElementById('json-config').value;
+                const newConfig = JSON.parse(jsonString);
+
+                // Update store config
+                storeConfig = newConfig;
+
+                // Update API
+                fetch('/admin/settings/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        key_path: "",
+                        new_value: storeConfig
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showToast('Configuration saved successfully');
+
+                    // Update form values to match the new config
+                    updateFormValues();
+
+                    // Update preview
+                    updateLivePreview();
+                })
+                .catch(error => {
+                    showToast('Error saving configuration', 'error');
+                    console.error('Error:', error);
+                });
+            } catch (error) {
+                showToast('Error parsing JSON: ' + error.message, 'error');
+                console.error('Error:', error);
+            }
+        }
+    }
+
+    // Update form values based on current config
+    function updateFormValues() {
+        // General settings
+        document.getElementById('store-name').value = storeConfig.shop.name;
+        document.getElementById('store-email').value = storeConfig.shop.email;
+        document.getElementById('store-phone').value = storeConfig.shop.phone;
+        document.getElementById('store-address').value = storeConfig.shop.address;
+        document.getElementById('store-currency').value = storeConfig.shop.currency;
+        document.getElementById('store-tax').value = (storeConfig.shop.tax * 100).toFixed(2);
+
+        // Theme settings
+        document.getElementById('primary-color').value = storeConfig.shop.theme.primary;
+        document.getElementById('primary-color-hex').value = storeConfig.shop.theme.primary;
+        document.getElementById('secondary-color').value = storeConfig.shop.theme.secondary;
+        document.getElementById('secondary-color-hex').value = storeConfig.shop.theme.secondary;
+        document.getElementById('text-color').value = storeConfig.shop.theme.text;
+        document.getElementById('text-color-hex').value = storeConfig.shop.theme.text;
+        document.getElementById('background-color').value = storeConfig.shop.theme.background;
+        document.getElementById('background-color-hex').value = storeConfig.shop.theme.background;
+        document.getElementById('dark-color').value = storeConfig.shop.theme.dark;
+        document.getElementById('dark-color-hex').value = storeConfig.shop.theme.dark;
+
+        // Payment settings
+        document.getElementById('payment-provider').value = storeConfig.shop.payment.provider;
+        document.getElementById('sandbox-url').value = storeConfig.shop.payment.sandbox_url;
+        document.getElementById('production-url').value = storeConfig.shop.payment.production_url;
+
+        // Shipping settings
+        document.getElementById('shipping-cost').value = storeConfig.shop.shipping;
+        document.getElementById('free-shipping-threshold').value = storeConfig.shop.free_shipping;
+    }
+
+    // Reset to defaults
+    function resetToDefaults() {
+        if (confirm('Are you sure you want to reset all settings to defaults? This cannot be undone.')) {
+            fetch('/admin/settings/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update store config with defaults
+                storeConfig = data;
+
+                // Update JSON editor
+                document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+                // Update form values
+                updateFormValues();
+
+                // Update preview
+                updateLivePreview();
+
+                showToast('Settings reset to defaults');
+            })
+            .catch(error => {
+                showToast('Error resetting settings', 'error');
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    // Load settings from server on page load
+    function loadSettings() {
+        fetch('/admin/store-info')
+            .then(response => response.json())
+            .then(data => {
+                // Update store config
+                storeConfig.shop = data;
+
+                // Update JSON editor
+                document.getElementById('json-config').value = JSON.stringify(storeConfig, null, 2);
+
+                // Update form values
+                updateFormValues();
+
+                // Update preview
+                updateLivePreview();
+            })
+            .catch(error => {
+                console.error('Error loading settings:', error);
+            });
+
+        // Load environment variables
+        fetch('/admin/env/RAZORPAY_KEY_ID')
+            .then(response => response.json())
+            .then(data => {
+                envVariables.RAZORPAY_KEY_ID = data.RAZORPAY_KEY_ID;
+                document.getElementById('razorpay-key-id').value = data.RAZORPAY_KEY_ID;
+            })
+            .catch(error => {
+                console.error('Error loading Razorpay Key ID:', error);
+            });
+    }
+
+    // Load settings on page load
+    loadSettings();
+</script>
+{% endblock %}

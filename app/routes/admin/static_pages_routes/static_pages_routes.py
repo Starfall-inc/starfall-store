@@ -142,3 +142,7 @@ def manage_orders():
     Renders the order management dashboard with all orders.
     """
     return render_template("admin/orders/main.html")
+
+@admin_static_routes_bp.route("/store/settings", methods=["GET"])
+def render_settings_page():
+    return render_template("admin/store/settings.html")

@@ -1,28 +1,28 @@
 {
-  "shop": {
-    "shop_domain": "https://sakuramart-dev.sangonomiya.icu",
-    "name": "SakuraMart",
-    "email": "support@sakuramart.jp",
-    "phone": "098-765-4321",
-    "address": "123 Sakura St, Tokyo, Japan, 100-0001",
-    "currency": "INR",
-    "currency_symbol": "$",
-    "tax": 0.08,
-    "shipping": 500,
-    "free_shipping": 5000,
-    "logo": "sakura-logo.png",
-    "favicon": "sakura-favicon.ico",
-    "theme": {
-      "primary": "#FFC0CB",
-      "secondary": "#FF69B4",
-      "text": "#4A4A4A",
-      "background": "#FFF0F5",
-      "dark": "#8B0000"
-    },
-    "payment": {
-      "provider": "razorpay",
-      "sandbox_url": "https://api.razorpay.com/v1/",
-      "production_url": "https://api.razorpay.com/v1/"
+    "shop": {
+        "shop_domain": "https://sakuramart-dev.sangonomiya.icu",
+        "name": "SakuraMart",
+        "email": "support@sangonomiya.icu",
+        "phone": "098-765-4321",
+        "address": "123 Sakura St, Tokyo, Japan, 100-0001",
+        "currency": "INR",
+        "currency_symbol": "\u20b9",
+        "tax": 0.08,
+        "shipping": 500,
+        "free_shipping": 5000,
+        "logo": "sakura-logo.png",
+        "favicon": "sakura-favicon.ico",
+        "theme": {
+            "primary": "#FFC0CB",
+            "secondary": "#FF69B4",
+            "text": "#4A4A4A",
+            "background": "#FFF0F5",
+            "dark": "#8B0000"
+        },
+        "payment": {
+            "provider": "razorpay",
+            "sandbox_url": "https://api.razorpay.com/v1/",
+            "production_url": "https://api.razorpay.com/v1/"
+        }
     }
-  }
 }

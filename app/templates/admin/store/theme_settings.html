@@ -1,0 +1,63 @@
+{% extends 'admin/base.html' %}
+{% block title %}Theme Settings{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 shadow-md rounded-lg">
+    <h2 class="text-2xl font-semibold mb-4">Theme Settings</h2>
+
+    <form id="themeForm" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium">Primary Color</label>
+            <input type="color" id="primaryColor" class="w-full p-2 border rounded">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium">Secondary Color</label>
+            <input type="color" id="secondaryColor" class="w-full p-2 border rounded">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium">Text Color</label>
+            <input type="color" id="textColor" class="w-full p-2 border rounded">
+        </div>
+
+        <button type="submit" class="bg-primary text-white p-2 rounded">Update Theme</button>
+    </form>
+
+    <div id="themePreview" class="mt-6">
+        {% include 'admin/partials/preview.html' %}
+    </div>
+</div>
+
+<script>
+    async function fetchTheme() {
+        const response = await fetch("/api/store/config/theme/get");
+        const theme = await response.json();
+
+        document.getElementById("primaryColor").value = theme.primary;
+        document.getElementById("secondaryColor").value = theme.secondary;
+        document.getElementById("textColor").value = theme.text;
+    }
+
+    document.getElementById("themeForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const update = {
+            primary: document.getElementById("primaryColor").value,
+            secondary: document.getElementById("secondaryColor").value,
+            text: document.getElementById("textColor").value
+        };
+
+        await fetch("/api/store/config/theme/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update)
+        });
+
+        alert("Theme updated!");
+        location.reload();
+    });
+
+    fetchTheme();
+</script>
+{% endblock %}

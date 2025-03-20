@@ -138,7 +138,7 @@ class PaymentManager:
 
             # Update order status based on payment status
             if status == "captured":
-                order.status = "Paid"
+                order.status = "pending"
                 db.session.commit()
                 seraphina.info(f"✅ Payment successful for Order {order_id} via {payment_method}")
                 return {"success": True, "message": "Payment successful"}
