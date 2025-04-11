@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: web
+    ports:
+      - "5909:5909"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - minio
+    environment:
+      DATABASE_URL: "postgresql://dreamkart:dreamkart123@database:5432/dreamkart_db"
+      ADMIN_SQLALCHEMY_DATABASE_URI: "sqlite:///admin.db" # Or a Docker volume path
+      REDIS_URL: "redis://redis:6379/0"
+      MINIO_ENDPOINT: "minio:9000"
+      MINIO_ACCESS: "dreamkart_storage"
+      MINIO_SECRET: "dreamkart_secret_key"
+      MINIO_BUCKET: "shop"
+      # Add other environment variables from your .env or config.py here
+    command: /app/start.sh
+
+  database:
+    image: postgres:13
+    container_name: database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: dreamkart
+      POSTGRES_PASSWORD: dreamkart123
+      POSTGRES_DB: dreamkart_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001" # MinIO Console
+    environment:
+      MINIO_ROOT_USER: dreamkart_storage
+      MINIO_ROOT_PASSWORD: dreamkart_secret_key
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  minio_data:
+  redis_data:

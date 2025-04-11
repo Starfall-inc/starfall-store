@@ -16,9 +16,9 @@ class Config:
     """Base configuration with default settings"""
     SECRET_KEY = os.getenv("SECRET_KEY", "c4d2e2f68f114b2d8d7a2f3a8e9b1c6f7e8d9f3b6a2c5d4e1a8c9b7d6e1f2a3c")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///database.db")  # Default to SQLite
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql+psycopg2://kirara:meow123@postgresql:5432/production")  # Default to SQLite
     SQLALCHEMY_BINDS = {
         "admin_db": os.getenv("ADMIN_SQLALCHEMY_DATABASE_URI", "sqlite:///admin.db"),
     }
@@ -53,18 +53,18 @@ class Config:
     CACHE_DEFAULT_TIMEOUT = 300
 
     # Razorpay config
-    RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
-    RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+    RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_1234567890")
+    RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "rzp_secret_1234567890")
     RAZORPAY_CALLBACK_PATH = os.getenv("RAZORPAY_CALLBACK_PATH", "/api/payment/callback")
 
     # OAuth Configurations
-    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-    FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID")
-    FACEBOOK_CLIENT_SECRET = os.getenv("FACEBOOK_CLIENT_SECRET")
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your-google-client-id")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "your-google-client-secret")
+    FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID", "your-facebook-client-id")
+    FACEBOOK_CLIENT_SECRET = os.getenv("FACEBOOK_CLIENT_SECRET", "your-facebook-client-secret")
 
     # MinIO Configurations
-    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
+    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio:9000")
     MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS", "minio")
     MINIO_SECRET_KEY = os.getenv("MINIO_SECRET", "minio123")
     MINIO_BUCKET = os.getenv("MINIO_BUCKET", "shop")
