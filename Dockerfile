@@ -3,8 +3,8 @@ FROM python:3.9-slim-buster
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install git
-RUN apt-get update && apt-get install -y --no-install-recommends git
+# Install git, PostgreSQL client development libraries, and build essentials
+RUN apt-get update && apt-get install -y --no-install-recommends git libpq-dev build-essential
 
 # Clone the repository
 ARG REPO_URL=https://github.com/danish-mar/dreamkart.git
