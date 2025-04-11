@@ -18,6 +18,7 @@ ENABLED_OAUTH_PROVIDERS = {}
 
 CONFIG_PATH = Path(__file__).parent.parent / "app/config.json"
 
+
 def load_config():
     """Loads the latest config from config.json dynamically."""
     try:
@@ -40,7 +41,6 @@ def create_app():
 
     app.config["DEBUG"] = True
     app.config["TEMPLATES_AUTO_RELOAD"] = True  # Reloads templates without restart
-
 
     # Initialize database
     db.init_app(app)
@@ -114,11 +114,10 @@ def create_app():
                 "TEXT_COLOR": shop.get("theme", {}).get("text", "#333333"),
                 "BACKGROUND_COLOR": shop.get("theme", {}).get("background", "#F8F8F8"),
                 "DARK_COLOR": shop.get("theme", {}).get("dark", "#111111"),
+                "ENABLED_OAUTH_PROVIDERS": ENABLED_OAUTH_PROVIDERS,  # Add this line
             }
 
         return app
-
-
 
         # ✅ Auto-create tables if necessary
         if "sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]:
