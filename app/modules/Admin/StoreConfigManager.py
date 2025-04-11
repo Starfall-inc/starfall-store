@@ -10,11 +10,12 @@ logger = logging.getLogger(__name__)
 class StoreConfigManager:
     """Handles loading, modifying, and saving store configuration."""
 
-    CONFIG_FILE = Path(__file__).parent / "configuration.json"
+    CONFIG_FILE = Path(__file__).resolve().parent.parent.parent / "config.json"
     ENV_PATH = Path(__file__).parent.parent / ".env"  # Adjust path if needed
 
     @staticmethod
     def load_config():
+        print(StoreConfigManager.CONFIG_FILE)
         """Loads the configuration from JSON file."""
         try:
             with open(StoreConfigManager.CONFIG_FILE, "r", encoding="utf-8") as f:

@@ -28,6 +28,7 @@ class OrderManager:
                 total=total_amount,
                 shipping_address=shipping_address,
                 delivery_charges=delivery_charges,
+                status="unpaid",
                 expected_delivery_date=datetime.utcnow() + timedelta(days=5)  # Estimate 5-day delivery
             )
 

@@ -7,11 +7,25 @@ from app.extensions import admin_db, db, seraphina, init_seraphina, init_redis, 
 from app.utils.template_utils import format_price
 import os
 from sqlalchemy import inspect
+from pathlib import Path
+import json
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 # ✅ Global variable to store enabled OAuth providers
 ENABLED_OAUTH_PROVIDERS = {}
+
+CONFIG_PATH = Path(__file__).parent.parent / "app/config.json"
+
+def load_config():
+    """Loads the latest config from config.json dynamically."""
+    try:
+        with open(CONFIG_PATH, "r") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"⚠️ Error loading config: {e}")
+        return {}  # Return an empty dictionary on failure
 
 
 def create_app():
@@ -73,25 +87,36 @@ def create_app():
         from app.routes import register_blueprints
         register_blueprints(app)
 
-        # Inject global settings into templates
-        app.context_processor(lambda: {
-            "SHOP_NAME": app.config["SHOP_NAME"],
-            "SHOP_EMAIL": app.config["SHOP_EMAIL"],
-            "SHOP_PHONE": app.config["SHOP_PHONE"],
-            "SHOP_ADDRESS": app.config["SHOP_ADDRESS"],
-            "CURRENCY": app.config["CURRENCY"],
-            "CURRENCY_SYMBOL": app.config["CURRENCY_SYMBOL"],
-            "TAX_RATE": app.config["TAX_RATE"],
-            "SHIPPING_COST": app.config["SHIPPING_COST"],
-            "FREE_SHIPPING_THRESHOLD": app.config["FREE_SHIPPING_THRESHOLD"],
-            "LOGO": app.config["LOGO"],
-            "FAVICON": app.config["FAVICON"],
-            "PRIMARY_COLOR": app.config["PRIMARY_COLOR"],
-            "SECONDARY_COLOR": app.config["SECONDARY_COLOR"],
-            "BACKGROUND_COLOR": app.config["BACKGROUND_COLOR"],
-            "DARK_COLOR": app.config["DARK_COLOR"],
-            "ENABLED_OAUTH_PROVIDERS": ENABLED_OAUTH_PROVIDERS  # ✅ Inject enabled OAuth providers
-        })
+        @app.context_processor
+        def inject_settings():
+            """Loads config.json dynamically each time a template is rendered."""
+            config_data = load_config()
+
+            if not config_data:
+                return {}  # Avoid errors if config loading fails
+
+            shop = config_data.get("shop", {})
+
+            return {
+                "SHOP_NAME": shop.get("name", "Default Shop"),
+                "SHOP_EMAIL": shop.get("email", "support@example.com"),
+                "SHOP_PHONE": shop.get("phone", "000-000-0000"),
+                "SHOP_ADDRESS": shop.get("address", "123 Default St."),
+                "CURRENCY": shop.get("currency", "USD"),
+                "CURRENCY_SYMBOL": shop.get("currency_symbol", "$"),
+                "TAX_RATE": shop.get("tax", 0.0),
+                "SHIPPING_COST": shop.get("shipping", 0),
+                "FREE_SHIPPING_THRESHOLD": shop.get("free_shipping", 0),
+                "LOGO": shop.get("logo", "default-logo.png"),
+                "FAVICON": shop.get("favicon", "default-favicon.ico"),
+                "PRIMARY_COLOR": shop.get("theme", {}).get("primary", "#000000"),
+                "SECONDARY_COLOR": shop.get("theme", {}).get("secondary", "#FFFFFF"),
+                "TEXT_COLOR": shop.get("theme", {}).get("text", "#333333"),
+                "BACKGROUND_COLOR": shop.get("theme", {}).get("background", "#F8F8F8"),
+                "DARK_COLOR": shop.get("theme", {}).get("dark", "#111111"),
+            }
+
+        return app
 
 
 

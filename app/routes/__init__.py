@@ -12,6 +12,7 @@ from app.routes.dynamic_routes import dynamic_route_bp
 from app.routes.payment_routes import payment_bp
 from app.routes.admin.product_management import product_bp as admin_product_bp
 from app.routes.invoice_routes import receipt_bp
+from app.routes.admin.store_config_routes import admin_api
 
 
 def register_blueprints(app):
@@ -36,4 +37,5 @@ def register_blueprints(app):
     app.register_blueprint(admin_product_bp)
     app.register_blueprint(order_blueprint, url_prefix="/api/admin/order")
     app.register_blueprint(receipt_bp)
+    app.register_blueprint(admin_api, url_prefix="/admin/settings")
 
