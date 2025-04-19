@@ -26,6 +26,9 @@ def index():
         categories=categories
     )
 
+@staticroute_bp.route('/about', methods=['GET'])
+def render_about_page():
+    return render_template('about.html')
 
 @staticroute_bp.route('/orignal')
 def index_orignal():

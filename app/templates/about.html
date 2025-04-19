@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative">
+    <!-- Gradient Background with Blur -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm"></div>
+
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-text mb-2 opacity-0 animate-[fadeInDown_1s_forwards]">{{ SHOP_NAME }}</h1>
+            <div class="h-1 w-20 bg-primary mx-auto my-4 rounded-full opacity-0 animate-[fadeIn_1s_0.5s_forwards]"></div>
+            <p class="text-xl text-text/80 max-w-2xl mx-auto opacity-0 animate-[fadeIn_1s_0.7s_forwards]">Discover the story behind our passion for excellence and commitment to quality</p>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+            <div class="w-full md:w-1/2">
+                <div class="rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
+                    <img src="/static/images/shop_kart.jfif" alt="Our Story" class="w-full h-auto">
+                </div>
+            </div>
+            <div class="w-full md:w-1/2">
+                <h2 class="text-3xl font-bold mb-6 text-text">Our Story</h2>
+                <div class="h-1 w-16 bg-primary mb-6 rounded-full"></div>
+                <p class="text-text/80 mb-4">Founded in 2025, {{ SHOP_NAME }} began with a simple mission: to deliver exceptional products that combine quality, innovation, and sustainability. What started as a small passion project has grown into a beloved brand recognized for its commitment to excellence.</p>
+                <p class="text-text/80 mb-6">Our journey has been marked by continuous growth and learning, always guided by our core values and the feedback of our loyal customers.</p>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center justify-center bg-primary/10 h-12 w-12 rounded-full">
+                        <i class="fas fa-heart text-primary"></i>
+                    </div>
+                    <p class="font-medium">Passion-driven products made with care</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-text">Our Values</h2>
+            <div class="h-1 w-16 bg-primary mx-auto my-4 rounded-full"></div>
+            <p class="text-text/80 max-w-2xl mx-auto">The principles that guide everything we do</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Value Card 1 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 transform hover:-translate-y-2 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-6">
+                    <i class="fas fa-award text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-4 text-center">Quality</h3>
+                <p class="text-text/70 text-center">We never compromise on quality. Every product we offer meets our rigorous standards for excellence and durability.</p>
+            </div>
+
+            <!-- Value Card 2 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 transform hover:-translate-y-2 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-6">
+                    <i class="fas fa-leaf text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-4 text-center">Sustainability</h3>
+                <p class="text-text/70 text-center">We are committed to environmentally friendly practices, from sourcing materials to packaging and shipping.</p>
+            </div>
+
+            <!-- Value Card 3 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 transform hover:-translate-y-2 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-6">
+                    <i class="fas fa-users text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-4 text-center">Community</h3>
+                <p class="text-text/70 text-center">We believe in building lasting relationships with our customers and giving back to the communities we serve.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-text">Meet Our Team</h2>
+            <div class="h-1 w-16 bg-primary mx-auto my-4 rounded-full"></div>
+            <p class="text-text/80 max-w-2xl mx-auto">The passionate people behind {{ SHOP_NAME }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Team Member 1 -->
+            <div class="group">
+                <div class="relative overflow-hidden rounded-lg shadow-lg mb-4">
+                    <img src="/static/images/team/danish.jpg" lt="Team Member" class="w-full transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <div class="flex justify-center space-x-3">
+                                <a href="#" class="text-white hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                                <a href="#" class="text-white hover:text-primary"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-white hover:text-primary"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-text">Danish Khan</h3>
+                <p class="text-primary font-medium">Founder & Developer</p>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="group">
+                <div class="relative overflow-hidden rounded-lg shadow-lg mb-4">
+                    <img src="/static/images/team/sahim.jpg"
+                         alt="Team Member" class="w-full transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <div class="flex justify-center space-x-3">
+                                <a href="#" class="text-white hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                                <a href="#" class="text-white hover:text-primary"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-white hover:text-primary"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-text">Sahim Shaikh</h3>
+                <p class="text-primary font-medium">Product Designer</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-16 bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Stat 1 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center transform hover:scale-105 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-users text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-text mb-2">10K+</h3>
+                <p class="text-text/70">Happy Customers</p>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center transform hover:scale-105 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-globe text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-text mb-2">30+</h3>
+                <p class="text-text/70">Countries Served</p>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center transform hover:scale-105 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-gift text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-text mb-2">500+</h3>
+                <p class="text-text/70">Products</p>
+            </div>
+
+            <!-- Stat 4 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center transform hover:scale-105 transition-transform duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-star text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-text mb-2">4.9</h3>
+                <p class="text-text/70">Average Rating</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-text">What Our Customers Say</h2>
+            <div class="h-1 w-16 bg-primary mx-auto my-4 rounded-full"></div>
+            <p class="text-text/80 max-w-2xl mx-auto">Don't just take our word for it</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 relative hover:shadow-xl transition-shadow duration-300">
+                <div class="absolute -top-5 left-8 text-5xl text-primary opacity-25">"</div>
+                <p class="text-text/80 mb-6 relative z-10">The quality of products from {{ SHOP_NAME }} is unmatched. I've been a customer for years and have never been disappointed. Their customer service is also exceptional!</p>
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
+                         alt="Customer" class="w-12 h-12 rounded-full mr-4 object-cover">
+                    <div>
+                        <h4 class="font-semibold text-text">Emma Thompson</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 relative hover:shadow-xl transition-shadow duration-300">
+                <div class="absolute -top-5 left-8 text-5xl text-primary opacity-25">"</div>
+                <p class="text-text/80 mb-6 relative z-10">I found {{ SHOP_NAME }} while searching for sustainable products and I couldn't be happier. Their commitment to the environment while maintaining high quality is truly commendable.</p>
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
+                         alt="Customer" class="w-12 h-12 rounded-full mr-4 object-cover">
+                    <div>
+                        <h4 class="font-semibold text-text">James Wilson</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 relative hover:shadow-xl transition-shadow duration-300">
+                <div class="absolute -top-5 left-8 text-5xl text-primary opacity-25">"</div>
+                <p class="text-text/80 mb-6 relative z-10">The shipping was fast and the packaging was minimal yet secure. I appreciate a company that thinks about the details. Will definitely be ordering again!</p>
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
+                         alt="Customer" class="w-12 h-12 rounded-full mr-4 object-cover">
+                    <div>
+                        <h4 class="font-semibold text-text">Sofia Garcia</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-primary/5">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden">
+            <div class="w-full md:w-1/2 bg-gradient-to-br from-primary to-secondary p-12 text-white flex items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-4">Join Our Community</h2>
+                    <p class="mb-6">Subscribe to our newsletter to receive updates, special offers, and early access to new products.</p>
+                    <form class="flex flex-col sm:flex-row gap-2">
+                        <input type="email" placeholder="Your email address" class="px-4 py-2 rounded-l-lg w-full text-text" required>
+                        <button type="submit" class="bg-white text-primary font-medium px-6 py-2 rounded-r-lg hover:bg-gray-100 transition-colors duration-300">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 p-12 flex items-center">
+                <div>
+                    <h3 class="text-2xl font-bold text-text mb-4">Connect With Us</h3>
+                    <p class="text-text/70 mb-6">Follow us on social media for the latest updates, inspiration, and behind-the-scenes content.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-text">Get In Touch</h2>
+            <div class="h-1 w-16 bg-primary mx-auto my-4 rounded-full"></div>
+            <p class="text-text/80 max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Contact Card 1 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-map-marker-alt text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-2">Our Address</h3>
+                <p class="text-text/70">{{ SHOP_ADDRESS }}</p>
+            </div>
+
+            <!-- Contact Card 2 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-envelope text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-2">Email Us</h3>
+                <p class="text-text/70">{{ SHOP_EMAIL }}</p>
+            </div>
+
+            <!-- Contact Card 3 -->
+            <div class="bg-gray-50 rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mx-auto mb-4">
+                    <i class="fas fa-phone-alt text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-text mb-2">Call Us</h3>
+                <p class="text-text/70">{{ SHOP_PHONE }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    // Animate elements when they come into view
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            if (!section.classList.contains('animate-fade-in')) {
+                observer.observe(section);
+            }
+        });
+
+        // Show loading spinner during page navigation
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' && e.target.href && !e.target.href.startsWith('#')) {
+                document.getElementById('loading').classList.remove('hidden');
+            }
+        });
+    });
+</script>
+{% endblock %}
