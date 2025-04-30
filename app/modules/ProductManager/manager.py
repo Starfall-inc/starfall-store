@@ -40,7 +40,7 @@ class ProductManager:
                 "images": [image.to_dict() for image in product.images],  # Convert images properly
                 "tags": product.tags,
                 "is_featured": product.is_featured,
-                "avg_rating": product.avg_rating,
+                "avg_rating": product.average_rating,
             }
             for product in products
         ]
